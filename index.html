@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iShamay PRO - מערכת שמאות מקצועית</title>
+    <title>iShamay PRO | מערכת לימוד שמאות</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --blue: #007aff; --bg: #f2f2f7; --card: #ffffff; }
         * { box-sizing: border-box; font-family: 'Assistant', sans-serif; }
-        body { background: var(--bg); margin: 0; direction: rtl; }
-        .header { background: #fff; padding: 15px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .container { padding: 15px; max-width: 800px; margin: 0 auto; }
-        .card { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .field { margin-bottom: 15px; }
-        .field label { display: block; font-size: 13px; font-weight: 700; color: #666; margin-bottom: 5px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; background: #fafafa; }
-        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        body { background: var(--bg); margin: 0; padding: 0; }
+        .header { background: #fff; padding: 15px; border-bottom: 1px solid #d1d1d6; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 12px; font-weight: 700; color: #666; margin-bottom: 4px; }
+        input { width: 100%; padding: 12px; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 16px; background: #fafafa; outline: none; }
+        input:focus { border-color: var(--blue); background: #fff; }
+        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; transition: 0.2s; }
         .btn-main { background: var(--blue); color: #fff; width: 100%; }
-        .btn-search { background: #34c759; color: #fff; width: 60px; }
+        .btn-search { background: #34c759; color: #fff; width: 70px; }
         .loader { width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
@@ -26,7 +27,7 @@
             .print-only { display: block !important; }
             body { background: white; }
             .p-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-            .p-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+            .p-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
             .p-table th, .p-table td { border: 1px solid #000; padding: 8px; text-align: right; font-size: 14px; }
         }
         .print-only { display: none; }
@@ -44,118 +45,114 @@
 
         function App() {
             const [view, setView] = useState('home');
-            const [shamaim, setShamaim] = useState(JSON.parse(localStorage.getItem('sh_prof')) || { name: '', lic: '', addr: '', tel: '' });
-            const [reports, setReports] = useState(JSON.parse(localStorage.getItem('sh_reps')) || []);
             const [active, setActive] = useState(null);
             const [loading, setLoading] = useState(false);
+            const [shamaim, setShamaim] = useState(JSON.parse(localStorage.getItem('sh_prof')) || { name: 'אריק דהן', lic: '12345', addr: 'באר שבע', tel: '08-6235638' });
 
             useEffect(() => localStorage.setItem('sh_prof', JSON.stringify(shamaim)), [shamaim]);
-            useEffect(() => localStorage.setItem('sh_reps', JSON.stringify(reports)), [reports]);
 
             const fetchCar = async (plate) => {
                 if(!plate) return;
                 setLoading(true);
                 
-                // מערך של ניסיונות חיבור - מהיר ליסודי
-                const endpoints = [
-                    // ניסיון 1: משרד התחבורה דרך AllOrigins
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(`https://data.gov.il/api/3/action/datastore_search?resource_id=053ad247-c90d-4343-8397-3e4b8d5a4560&filters={"mispar_rechev":"${plate}"}`)}`,
-                    // ניסיון 2: משרד התחבורה דרך CorsProxy
-                    `https://corsproxy.io/?${encodeURIComponent(`https://data.gov.il/api/3/action/datastore_search?resource_id=053ad247-c90d-4343-8397-3e4b8d5a4560&filters={"mispar_rechev":"${plate}"}`)}`
+                const resourceId = "053ad247-c90d-4343-8397-3e4b8d5a4560";
+                const targetUrl = `https://data.gov.il/api/3/action/datastore_search?resource_id=${resourceId}&filters={"mispar_rechev":"${plate}"}`;
+                
+                // רשימת שרתי גישור (Proxies) - המערכת תנסה אותם אחד אחד
+                const proxies = [
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                    `https://thingproxy.freeboard.io/fetch/${targetUrl}`
                 ];
 
-                let success = false;
-                for (let url of endpoints) {
+                let found = false;
+                for (let proxyUrl of proxies) {
                     try {
-                        const res = await fetch(url);
+                        console.log("מנסה להתחבר דרך:", proxyUrl);
+                        const res = await fetch(proxyUrl);
                         const data = await res.json();
-                        const json = typeof data.contents === 'string' ? JSON.parse(data.contents) : data;
                         
-                        if(json.result?.records?.[0]) {
-                            const car = json.result.records[0];
-                            setActive({...active, client: {
-                                ...active.client,
-                                plate,
+                        // עיבוד התוצאה (כל פרוקסי מחזיר מבנה קצת שונה)
+                        const content = typeof data.contents === 'string' ? JSON.parse(data.contents) : data;
+                        
+                        if(content.result && content.result.records && content.result.records[0]) {
+                            const car = content.result.records[0];
+                            setActive(prev => ({
+                                ...prev,
+                                plate: plate,
                                 model: `${car.tozeret_nm} ${car.kinuy_mishkari || ''}`,
                                 year: car.shnat_yitzur
-                            }});
-                            success = true; break;
+                            }));
+                            found = true;
+                            break; 
                         }
-                    } catch (e) { continue; }
+                    } catch (e) {
+                        console.error("נתיב נכשל, עובר לבא...");
+                    }
                 }
 
-                if(!success) alert("לא ניתן למשוך נתונים אוטומטית. אנא הזן דגם ידנית.");
+                if(!found) alert("לא ניתן להתחבר למאגר כרגע (חסימת שרת). אנא הזן דגם ידנית.");
                 setLoading(false);
-            };
-
-            const totals = () => {
-                if(!active) return { sub: 0, tax: 0, total: 0, pct: 0 };
-                const pSum = active.parts.reduce((s, p) => s + (Number(p.p || 0) * (1 - (p.w || 0)/100)), 0);
-                const sub = pSum + Number(active.labor || 0) + Number(active.paint || 0);
-                return { sub, tax: sub * 0.17, total: sub * 1.17, pct: active.client.value > 0 ? (sub / active.client.value) * 100 : 0 };
             };
 
             return (
                 <div>
                     <div className="header noprint">
-                        <b onClick={()=>setView('home')} style={{cursor:'pointer'}}>iShamay <span style={{color:'var(--blue)'}}>PRO</span></b>
-                        <button className="btn" onClick={()=>setView('config')}>⚙️ הגדרות</button>
+                        <b style={{fontSize:20}}>iShamay <span style={{color:'var(--blue)'}}>PRO</span></b>
+                        <button className="btn" onClick={()=>setView(view === 'config' ? 'home' : 'config')}>⚙️</button>
                     </div>
 
                     <div className="container">
-                        {view === 'config' && (
+                        {view === 'config' ? (
                             <div className="card">
-                                <h3>פרטי שמאי קבועים</h3>
-                                <div className="field"><label>שם השמאי</label><input value={shamaim.name} onChange={e=>setShamaim({...shamaim, name:e.target.value})} /></div>
-                                <div className="field"><label>מספר רישיון</label><input value={shamaim.lic} onChange={e=>setShamaim({...shamaim, lic:e.target.value})} /></div>
-                                <div className="field"><label>כתובת וטלפון</label><input value={shamaim.addr} onChange={e=>setShamaim({...shamaim, addr:e.target.value})} /></div>
-                                <button className="btn btn-main" onClick={()=>setView('home')}>שמור</button>
+                                <h3>הגדרות שמאי</h3>
+                                <div className="field"><label>שם</label><input value={shamaim.name} onChange={e=>setShamaim({...shamaim, name:e.target.value})}/></div>
+                                <div className="field"><label>רישיון</label><input value={shamaim.lic} onChange={e=>setShamaim({...shamaim, lic:e.target.value})}/></div>
+                                <button className="btn btn-main" onClick={()=>setView('home')}>שמור וחזור</button>
                             </div>
-                        )}
-
-                        {view === 'home' && (
+                        ) : (
                             <div className="noprint">
-                                <button className="btn btn-main" onClick={()=>{setActive({id:Date.now(), date:new Date().toLocaleDateString('he-IL'), client:{name:'', plate:'', model:'', year:'', value:0}, parts:[], labor:0, paint:0}); setView('edit');}}>+ שומה חדשה</button>
-                                <div style={{marginTop:20}}>
-                                    {reports.map(r => (
-                                        <div key={r.id} className="card" onClick={()=>{setActive(r); setView('edit');}}>
-                                            <b>{r.client.name || 'ללא שם'}</b><br/><small>{r.client.plate} | {r.client.model}</small>
+                                {!active ? (
+                                    <button className="btn btn-main" onClick={()=>setActive({plate:'', model:'', year:'', value:0, parts:[], labor:0, paint:0})}>+ שומה חדשה</button>
+                                ) : (
+                                    <div className="card">
+                                        <div className="field">
+                                            <label>מספר רכב</label>
+                                            <div style={{display:'flex', gap:8}}>
+                                                <input type="number" value={active.plate} onChange={e=>setActive({...active, plate:e.target.value})} placeholder="לדוגמה: 12345678" />
+                                                <button className="btn btn-search" onClick={()=>fetchCar(active.plate)}>
+                                                    {loading ? <div className="loader"></div> : 'חפש'}
+                                                </button>
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {view === 'edit' && active && (
-                            <div className="noprint">
-                                <div className="card">
-                                    <div className="field">
-                                        <label>מספר רישוי</label>
-                                        <div style={{display:'flex', gap:5}}>
-                                            <input value={active.client.plate} onChange={e=>setActive({...active, client:{...active.client, plate:e.target.value}})} />
-                                            <button className="btn btn-search" onClick={()=>fetchCar(active.client.plate)}>{loading ? <div className="loader"></div> : '🔍'}</button>
-                                        </div>
+                                        <div className="field"><label>דגם</label><input value={active.model} onChange={e=>setActive({...active, model:e.target.value})} /></div>
+                                        <div className="field"><label>שנה</label><input value={active.year} onChange={e=>setActive({...active, year:e.target.value})} /></div>
+                                        <button className="btn btn-main" style={{background:'#34c759'}} onClick={()=>window.print()}>הדפס דו"ח</button>
+                                        <button className="btn btn-ghost" onClick={()=>setActive(null)} style={{width:'100%', marginTop:10}}>ביטול</button>
                                     </div>
-                                    <div className="field"><label>דגם רכב</label><input value={active.client.model} onChange={e=>setActive({...active, client:{...active.client, model:e.target.value}})} /></div>
-                                    <div className="field"><label>ערך רכב (₪)</label><input type="number" value={active.client.value} onChange={e=>setActive({...active, client:{...active.client, value:e.target.value}})} /></div>
-                                </div>
-                                <button className="btn btn-main" onClick={()=>{setReports(prev=>[...prev.filter(x=>x.id!==active.id), active]); window.print();}}>הדפס דו"ח</button>
+                                )}
                             </div>
                         )}
-
-                        {/* תצוגת הדפסה מקצועית */}
+                        
+                        {/* תבנית הדפסה */}
                         {active && (
                             <div className="print-only">
                                 <div className="p-header">
-                                    <h1>{shamaim.name || 'משרד שמאות'}</h1>
-                                    <p>רישיון: {shamaim.lic} | {shamaim.addr}</p>
+                                    <h1>{shamaim.name} - שמאות רכב</h1>
+                                    <p>כתובת: {shamaim.addr} | טלפון: {shamaim.tel} | רישיון: {shamaim.lic}</p>
                                 </div>
-                                <h2 style={{textAlign:'center'}}>חוות דעת שומת נזק</h2>
-                                <div style={{border:'1px solid #000', padding:10, marginBottom:20}}>
-                                    <b>מספר רישוי:</b> {active.client.plate} | <b>דגם:</b> {active.client.model} | <b>אחוז נזק:</b> {totals().pct.toFixed(1)}%
+                                <h2>חוות דעת שומת נזק</h2>
+                                <div style={{border:'1px solid #000', padding:10}}>
+                                    <p><b>מספר רכב:</b> {active.plate}</p>
+                                    <p><b>דגם:</b> {active.model}</p>
+                                    <p><b>שנת ייצור:</b> {active.year}</p>
                                 </div>
-                                <p><b>הצהרה משפטית:</b> אני נותן חוות דעתי זו במקום עדות בבית המשפט...</p>
-                                <div style={{marginTop:50}}>________________<br/>חתימת השמאי</div>
+                                <div style={{marginTop:30}}>
+                                    <p><b>הצהרה:</b> אני נותן חוות דעתי זו במקום עדות בבית המשפט...</p>
+                                    <br/><br/>
+                                    <p>_________________</p>
+                                    <p>חתימת השמאי</p>
+                                </div>
                             </div>
                         )}
                     </div>
