@@ -3,84 +3,49 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>iShamay Pro Mobile | מערכת שמאות חכמה</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;400;600;700&display=swap" rel="stylesheet" />
+    <title>iShamay Expert | מערכת שמאות מקצועית</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
     <style>
         :root {
-            --apple-bg: #f5f5f7;
-            --apple-card: rgba(255, 255, 255, 0.9);
-            --apple-blue: #0071e3;
-            --apple-gray: #86868b;
-            --apple-border: rgba(0,0,0,0.1);
-            --radius: 16px;
+            --ios-blue: #007aff;
+            --ios-bg: #f2f2f7;
+            --ios-card: #ffffff;
+            --radius: 12px;
+            --border: rgba(0,0,0,0.1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { 
-            background: var(--apple-bg); 
-            color: #1d1d1f; 
-            font-family: 'Assistant', sans-serif; 
-            line-height: 1.4;
-            overflow-x: hidden;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--ios-bg); color: #000; font-family: 'Assistant', sans-serif; margin: 0; padding: 0; }
 
-        .container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 20px; }
-
-        /* Mobile Optimization */
-        @media (max-width: 768px) {
-            .container { padding: 15px; }
-            .grid-split { grid-template-columns: 1fr !important; }
-            .hide-mobile { display: none; }
-            h1 { font-size: 24px !important; }
-            .btn { width: 100%; justify-content: center; }
-            .part-row { grid-template-columns: 1fr !important; gap: 8px !important; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        }
-
-        .glass {
-            background: var(--apple-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--apple-border);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        .btn {
-            padding: 14px 20px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 15px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary { background: var(--apple-blue); color: #fff; }
-        .btn-secondary { background: #e8e8ed; color: #1d1d1f; }
+        /* UI Elements */
+        .header { position: sticky; top: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--border); z-index: 1000; }
+        .container { padding: 20px; max-width: 900px; margin: 0 auto; }
+        .card { background: var(--ios-card); border-radius: var(--radius); padding: 20px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--apple-border);
-            background: #fff;
-            font-size: 16px; /* מונע Zoom-in אוטומטי באייפון */
-            margin-bottom: 10px;
+        .tabs { display: flex; background: #e3e3e8; padding: 3px; border-radius: 10px; margin-bottom: 20px; }
+        .tab { flex: 1; text-align: center; padding: 8px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; }
+        .tab.active { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 12px; font-weight: 700; color: #8e8e93; margin-bottom: 4px; }
+        input { width: 100%; border: none; background: #f2f2f7; padding: 12px; border-radius: 10px; font-size: 16px; outline: none; }
+        
+        .btn { border-radius: 10px; border: none; font-weight: 700; cursor: pointer; padding: 12px 20px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+        .btn-main { background: var(--ios-blue); color: #fff; width: 100%; }
+        .btn-ghost { background: transparent; color: var(--ios-blue); }
+
+        /* Print Styles - Matching the PDF Samples */
+        @media print {
+            .noprint { display: none !important; }
+            body { background: white; padding: 0; }
+            .print-only { display: block !important; font-family: "David", "Times New Roman", serif; line-height: 1.2; }
+            .p-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
+            .p-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+            .p-table th, .p-table td { border: 1px solid #000; padding: 6px; text-align: right; }
+            .p-table th { background: #f0f0f0; }
+            .summary-box { border: 1px solid #000; padding: 10px; margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         }
-
-        label { font-size: 12px; font-weight: 700; color: var(--apple-gray); margin-bottom: 4px; display: block; }
-
-        .loading-ring {
-            width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent;
-            border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media print { .noprint { display: none !important; } }
+        .print-only { display: none; }
     </style>
 </head>
 <body>
@@ -94,115 +59,193 @@
         const { useState, useEffect } = React;
 
         function App() {
-            const [view, setView] = useState('home');
-            const [reports, setReports] = useState(JSON.parse(localStorage.getItem('reports')) || []);
+            const [view, setView] = useState('home'); 
+            const [tab, setTab] = useState('vehicle');
+            // פרופיל שמאי קבוע לכל תלמיד
+            const [shamaim, setShamaim] = useState(JSON.parse(localStorage.getItem('shamaim_profile')) || { name: '', license: '', address: '', phone: '', email: '' });
+            const [reports, setReports] = useState(JSON.parse(localStorage.getItem('reports_v4')) || []);
             const [activeReport, setActiveReport] = useState(null);
             const [loading, setLoading] = useState(false);
 
-            useEffect(() => localStorage.setItem('reports', JSON.stringify(reports)), [reports]);
+            useEffect(() => localStorage.setItem('reports_v4', JSON.stringify(reports)), [reports]);
+            useEffect(() => localStorage.setItem('shamaim_profile', JSON.stringify(shamaim)), [shamaim]);
 
-            // תיקון משיכת נתונים עם Proxy למניעת CORS
-            const fetchCarData = async (plate) => {
-                if (!plate) return;
+            const fetchVehicle = async (plate) => {
                 setLoading(true);
-                const resource = "053ad247-c90d-4343-8397-3e4b8d5a4560";
-                const url = `https://data.gov.il/api/3/action/datastore_search?resource_id=${resource}&q=${plate}`;
-                
                 try {
-                    // שימוש ב-Proxy כדי לעקוף חסימת דפדפן
+                    const url = `https://data.gov.il/api/3/action/datastore_search?resource_id=053ad247-c90d-4343-8397-3e4b8d5a4560&filters={"mispar_rechev":"${plate}"}`;
                     const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
                     const json = await res.json();
-                    const data = JSON.parse(json.contents);
-                    
-                    if (data.result.records.length > 0) {
-                        const car = data.result.records[0];
-                        setActiveReport(prev => ({
-                            ...prev,
-                            client: {
-                                ...prev.client,
-                                model: `${car.tozeret_nm} ${car.kinuy_mishkari || ''}`,
-                                year: car.shnat_yitzur,
-                                plate: plate
-                            }
-                        }));
-                    } else {
-                        alert("הרכב לא נמצא במאגר");
-                    }
-                } catch (e) {
-                    alert("שגיאה בחיבור למאגר הממשלתי");
-                } finally {
-                    setLoading(false);
-                }
+                    const car = JSON.parse(json.contents).result.records[0];
+                    if (car) {
+                        setActiveReport({...activeReport, client: {...activeReport.client, plate, model: `${car.tozeret_nm} ${car.kinuy_mishkari || ''}`, year: car.shnat_yitzur}});
+                    } else alert("רכב לא נמצא");
+                } catch (e) { alert("שגיאה בחיבור למאגר"); }
+                setLoading(false);
             };
 
-            const stats = activeReport ? (() => {
-                const partsSum = activeReport.parts.reduce((s, p) => s + (Number(p.price || 0) * (1 - (p.wear || 0)/100)), 0);
-                const subTotal = partsSum + Number(activeReport.labor || 0) + Number(activeReport.paint || 0);
-                return { total: subTotal * 1.17, damage: activeReport.client.value > 0 ? (subTotal / activeReport.client.value) * 100 : 0 };
-            })() : null;
+            const calculate = () => {
+                if(!activeReport) return { sub: 0, total: 0, damage: 0 };
+                const partsTotal = activeReport.parts.reduce((s, p) => s + (Number(p.price || 0) * (1 - (p.wear || 0)/100)), 0);
+                const sub = partsTotal + Number(activeReport.labor || 0) + Number(activeReport.paint || 0);
+                const total = sub * 1.17;
+                const damage = activeReport.client.value > 0 ? (sub / activeReport.client.value) * 100 : 0;
+                return { partsTotal, sub, total, damage };
+            };
 
             return (
-                <div className="container">
-                    <header className="noprint" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                        <h1 style={{fontSize:'28px'}}>iShamay</h1>
-                        <button className="btn btn-primary" onClick={() => {
-                            setActiveReport({ id: Date.now(), date: new Date().toLocaleDateString('he-IL'), client: {name:'', plate:'', model:'', year:'', value:0}, parts: [], labor:0, paint:0 });
-                            setView('edit');
-                        }}>+ חדש</button>
-                    </header>
-
-                    {view === 'home' ? (
-                        <div style={{display:'grid', gap:'15px'}}>
-                            {reports.length === 0 && <p style={{textAlign:'center', opacity:0.5, marginTop:'50px'}}>אין דוחות שמורים</p>}
-                            {reports.map(r => (
-                                <div key={r.id} className="glass" onClick={() => { setActiveReport(r); setView('edit'); }}>
-                                    <div style={{fontWeight:'700'}}>{r.client.name || 'ללא שם'}</div>
-                                    <div style={{fontSize:'13px', color:'var(--apple-gray)'}}>{r.client.plate} | {r.client.model}</div>
-                                </div>
-                            ))}
+                <div>
+                    <div className="header noprint">
+                        <span style={{fontWeight:800}}>iShamay <span style={{color:'var(--ios-blue)'}}>EXPERT</span></span>
+                        <div style={{display:'flex', gap:10}}>
+                            <button className="btn btn-ghost" onClick={() => setView('settings')}>⚙️ שמאי</button>
+                            {view !== 'home' && <button className="btn btn-ghost" onClick={() => setView('home')}>ביטול</button>}
                         </div>
-                    ) : (
-                        <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '20px' }}>
-                            <div className="glass">
-                                <label>מספר רישוי (חיפוש ממשלתי)</label>
-                                <div style={{display:'flex', gap:'8px', marginBottom:'20px'}}>
-                                    <input placeholder="00-000-00" value={activeReport.client.plate} onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, plate: e.target.value}})} />
-                                    <button className="btn btn-primary" style={{height:'46px'}} onClick={() => fetchCarData(activeReport.client.plate)}>
-                                        {loading ? <div className="loading-ring"></div> : 'חפש'}
-                                    </button>
-                                </div>
+                    </div>
 
-                                <div className="grid-split" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
-                                    <div><label>שם לקוח</label><input value={activeReport.client.name} onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, name: e.target.value}})} /></div>
-                                    <div><label>דגם</label><input value={activeReport.client.model} readOnly style={{background:'#f9f9fb'}} /></div>
-                                    <div><label>שנת ייצור</label><input value={activeReport.client.year} readOnly style={{background:'#f9f9fb'}} /></div>
-                                    <div><label>ערך רכב ₪</label><input type="number" value={activeReport.client.value} onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, value: e.target.value}})} /></div>
-                                </div>
+                    <div className="container">
+                        {view === 'settings' && (
+                            <div className="card noprint">
+                                <h3>פרטי שמאי קבועים</h3>
+                                <p style={{fontSize:12, color:'#8e8e93', marginBottom:15}}>פרטים אלו יופיעו בראש כל דו"ח שתדפיס.</p>
+                                <div className="field"><label>שם מלא / משרד</label><input value={shamaim.name} onChange={e=>setShamaim({...shamaim, name:e.target.value})} /></div>
+                                <div className="field"><label>מספר רישיון שמאי</label><input value={shamaim.license} onChange={e=>setShamaim({...shamaim, license:e.target.value})} /></div>
+                                <div className="field"><label>כתובת</label><input value={shamaim.address} onChange={e=>setShamaim({...shamaim, address:e.target.value})} /></div>
+                                <div className="field"><label>טלפון</label><input value={shamaim.phone} onChange={e=>setShamaim({...shamaim, phone:e.target.value})} /></div>
+                                <div className="field"><label>אימייל</label><input value={shamaim.email} onChange={e=>setShamaim({...shamaim, email:e.target.value})} /></div>
+                                <button className="btn btn-main" onClick={() => setView('home')}>שמור והמשך</button>
+                            </div>
+                        )}
 
-                                <h3 style={{margin:'20px 0 10px'}}>חלפים</h3>
-                                {activeReport.parts.map((p, i) => (
-                                    <div key={i} className="part-row" style={{display:'grid', gridTemplateColumns:'2fr 1fr 1fr 40px', gap:'10px', marginBottom:'10px'}}>
-                                        <input placeholder="שם החלק" value={p.name} onChange={e => { const ps = [...activeReport.parts]; ps[i].name = e.target.value; setActiveReport({...activeReport, parts: ps}); }} />
-                                        <input type="number" placeholder="בלאי %" value={p.wear} onChange={e => { const ps = [...activeReport.parts]; ps[i].wear = e.target.value; setActiveReport({...activeReport, parts: ps}); }} />
-                                        <input type="number" placeholder="מחיר" value={p.price} onChange={e => { const ps = [...activeReport.parts]; ps[i].price = e.target.value; setActiveReport({...activeReport, parts: ps}); }} />
-                                        <button className="btn btn-secondary" style={{padding:'5px'}} onClick={() => setActiveReport({...activeReport, parts: activeReport.parts.filter((_, idx) => idx !== i)})}>✕</button>
+                        {view === 'home' && (
+                            <div className="noprint">
+                                <button className="btn btn-main" style={{marginBottom:20}} onClick={() => {
+                                    setActiveReport({id:Date.now(), date:new Date().toLocaleDateString('he-IL'), client:{name:'', plate:'', model:'', year:'', value:0}, parts:[], labor:0, paint:0});
+                                    setView('edit');
+                                }}>+ שומה חדשה</button>
+                                {reports.map(r => (
+                                    <div key={r.id} className="card" onClick={() => {setActiveReport(r); setView('edit');}}>
+                                        <div style={{fontWeight:700}}>{r.client.name || 'לקוח ללא שם'}</div>
+                                        <div style={{fontSize:13, color:'#8e8e93'}}>{r.client.plate} | {r.client.model}</div>
                                     </div>
                                 ))}
-                                <button className="btn btn-secondary" onClick={() => setActiveReport({...activeReport, parts: [...activeReport.parts, {name:'', wear:0, price:0}]})}>+ הוסף חלק</button>
                             </div>
+                        )}
 
-                            <div className="glass noprint" style={{height:'fit-content'}}>
-                                <h3>סיכום שומה</h3>
-                                <div style={{fontSize:'32px', fontWeight:'700', margin:'15px 0', color:'var(--apple-blue)'}}>₪{stats.total.toLocaleString()}</div>
-                                <div style={{fontSize:'14px', marginBottom:'20px'}}>נזק מהערך: <b>{stats.damage.toFixed(1)}%</b></div>
-                                <button className="btn btn-primary" style={{width:'100%'}} onClick={() => {
-                                    setReports(prev => [...prev.filter(x => x.id !== activeReport.id), activeReport]);
-                                    window.print();
-                                }}>הדפס דו"ח</button>
-                                <button className="btn btn-secondary" style={{width:'100%', marginTop:'10px'}} onClick={() => setView('home')}>ביטול וחזרה</button>
+                        {view === 'edit' && activeReport && (
+                            <div className="noprint">
+                                <div className="tabs">
+                                    <div className={`tab ${tab==='vehicle'?'active':''}`} onClick={()=>setTab('vehicle')}>רכב</div>
+                                    <div className={`tab ${tab==='parts'?'active':''}`} onClick={()=>setTab('parts')}>נזקים</div>
+                                    <div className={`tab ${tab==='summary'?'active':''}`} onClick={()=>setTab('summary')}>סיכום</div>
+                                </div>
+
+                                {tab === 'vehicle' && (
+                                    <div className="card">
+                                        <div className="field">
+                                            <label>חיפוש מספר רכב</label>
+                                            <div style={{display:'flex', gap:8}}>
+                                                <input style={{fontWeight:700}} value={activeReport.client.plate} onChange={e=>setActiveReport({...activeReport, client:{...activeReport.client, plate:e.target.value}})} />
+                                                <button className="btn btn-main" style={{width:'auto'}} onClick={()=>fetchVehicle(activeReport.client.plate)}>{loading ? '...' : '🔍'}</button>
+                                            </div>
+                                        </div>
+                                        <div className="field"><label>שם לקוח</label><input value={activeReport.client.name} onChange={e=>setActiveReport({...activeReport, client:{...activeReport.client, name:e.target.value}})} /></div>
+                                        <div className="field"><label>דגם</label><input value={activeReport.client.model} readOnly /></div>
+                                        <div className="field"><label>ערך רכב בשוק</label><input type="number" value={activeReport.client.value} onChange={e=>setActiveReport({...activeReport, client:{...activeReport.client, value:e.target.value}})} /></div>
+                                    </div>
+                                )}
+
+                                {tab === 'parts' && (
+                                    <div>
+                                        {activeReport.parts.map((p,i) => (
+                                            <div key={i} className="card" style={{padding:12}}>
+                                                <input placeholder="תיאור החלק/העבודה" value={p.name} onChange={e=>{const ps=[...activeReport.parts]; ps[i].name=e.target.value; setActiveReport({...activeReport, parts:ps});}} />
+                                                <div style={{display:'flex', gap:8, marginTop:8}}>
+                                                    <input type="number" placeholder="בלאי %" value={p.wear} onChange={e=>{const ps=[...activeReport.parts]; ps[i].wear=e.target.value; setActiveReport({...activeReport, parts:ps});}} />
+                                                    <input type="number" placeholder="מחיר" value={p.price} onChange={e=>{const ps=[...activeReport.parts]; ps[i].price=e.target.value; setActiveReport({...activeReport, parts:ps});}} />
+                                                    <button onClick={()=>{const ps=activeReport.parts.filter((_,idx)=>idx!==i); setActiveReport({...activeReport, parts:ps});}} style={{background:'none', border:'none'}}>🗑️</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button className="btn btn-ghost" style={{width:'100%'}} onClick={()=>setActiveReport({...activeReport, parts:[...activeReport.parts, {name:'', wear:0, price:0}]})}>+ הוסף שורה</button>
+                                        <div className="card" style={{marginTop:15}}>
+                                            <div className="field"><label>עבודות פחחות/מכונאות ₪</label><input type="number" value={activeReport.labor} onChange={e=>setActiveReport({...activeReport, labor:e.target.value})} /></div>
+                                            <div className="field"><label>עבודות צבע ₪</label><input type="number" value={activeReport.paint} onChange={e=>setActiveReport({...activeReport, paint:e.target.value})} /></div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {tab === 'summary' && (
+                                    <div className="card" style={{textAlign:'center'}}>
+                                        <div style={{fontSize:14, color:'#8e8e93'}}>אחוז נזק:</div>
+                                        <div style={{fontSize:42, fontWeight:900, color:calculate().damage > 50 ? 'var(--ios-red)' : 'var(--ios-blue)'}}>{calculate().damage.toFixed(1)}%</div>
+                                        <div style={{fontSize:24, fontWeight:700, margin:'10px 0'}}>₪{calculate().total.toLocaleString()}</div>
+                                        <button className="btn btn-main" onClick={() => {
+                                            setReports(prev => [...prev.filter(x=>x.id !== activeReport.id), activeReport]);
+                                            window.print();
+                                        }}>הדפס דו"ח רשמי</button>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    )}
+                        )}
+
+                        {/* Print Layout - Professional Document */}
+                        {activeReport && (
+                            <div className="print-only">
+                                <div className="p-header">
+                                    <h2 style={{margin:0}}>{shamaim.name || 'משרד שמאות רכב'}</h2>
+                                    <p style={{margin:0, fontSize:12}}>{shamaim.address} | טל: {shamaim.phone} | {shamaim.email}</p>
+                                    <p style={{margin:0, fontSize:12}}>רישיון שמאי: {shamaim.license}</p>
+                                </div>
+                                
+                                <h3 style={{textAlign:'center', textDecoration:'underline'}}>חוות דעת שמאות רכב</h3>
+                                
+                                <div className="summary-box">
+                                    <div><b>תאריך:</b> {activeReport.date}</div>
+                                    <div><b>מספר רישוי:</b> {activeReport.client.plate}</div>
+                                    <div><b>שם המבוטח:</b> {activeReport.client.name}</div>
+                                    <div><b>דגם:</b> {activeReport.client.model} ({activeReport.client.year})</div>
+                                    <div><b>ערך רכב:</b> ₪{Number(activeReport.client.value).toLocaleString()}</div>
+                                    <div><b>אחוז נזק:</b> {calculate().damage.toFixed(1)}%</div>
+                                </div>
+
+                                <table className="p-table">
+                                    <thead>
+                                        <tr>
+                                            <th>תיאור הנזק / חלפים / עבודות</th>
+                                            <th style={{width:80}}>בלאי %</th>
+                                            <th style={{width:100}}>סכום ₪</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {activeReport.parts.map((p,i)=>(
+                                            <tr key={i}>
+                                                <td>{p.name}</td>
+                                                <td>{p.wear > 0 ? p.wear + '%' : '-'}</td>
+                                                <td>{Number(p.price).toLocaleString()}</td>
+                                            </tr>
+                                        ))}
+                                        <tr><td>עבודות פחחות ומכונאות</td><td>-</td><td>{Number(activeReport.labor).toLocaleString()}</td></tr>
+                                        <tr><td>עבודות צבע</td><td>-</td><td>{Number(activeReport.paint).toLocaleString()}</td></tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr><td colSpan="2"><b>סה"כ נזק גולמי:</b></td><td><b>₪{calculate().sub.toLocaleString()}</b></td></tr>
+                                        <tr><td colSpan="2">מע"מ (17%):</td><td>₪{(calculate().sub * 0.17).toLocaleString()}</td></tr>
+                                        <tr style={{fontSize:16}}><td colSpan="2"><b>סה"כ כולל מע"מ:</b></td><td><b>₪{calculate().total.toLocaleString()}</b></td></tr>
+                                    </tfoot>
+                                </table>
+
+                                <div style={{marginTop:40, fontSize:12, borderTop:'1px solid #000', paddingTop:15}}>
+                                    <b>הצהרה:</b> אני נותן חוות דעתי זו במקום עדות בבית המשפט, והריני מצהיר כי ידוע לי שלעניין הוראות החוק הפלילי בדבר עדות שקר, דין חוות דעתי זו, כשהיא חתומה על ידי, כדין עדות בבית המשפט.
+                                    <br/><br/><br/>
+                                    <div style={{display:'flex', justifyContent:'space-between'}}>
+                                        <div>________________<br/>חתימת השמאי</div>
+                                        <div><b>מספר תיק:</b> {activeReport.id}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             );
         }
