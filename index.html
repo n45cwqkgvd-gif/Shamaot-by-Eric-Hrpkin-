@@ -2,30 +2,39 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>iShamay Pro | מחובר למשרד התחבורה</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>iShamay Pro Mobile | מערכת שמאות חכמה</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;400;600;700&display=swap" rel="stylesheet" />
     <style>
         :root {
             --apple-bg: #f5f5f7;
-            --apple-card: rgba(255, 255, 255, 0.85);
-            --apple-dark: #1d1d1f;
+            --apple-card: rgba(255, 255, 255, 0.9);
             --apple-blue: #0071e3;
             --apple-gray: #86868b;
             --apple-border: rgba(0,0,0,0.1);
-            --radius-lg: 22px;
-            --radius-md: 12px;
+            --radius: 16px;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { 
             background: var(--apple-bg); 
-            color: var(--apple-dark); 
-            font-family: 'Assistant', -apple-system, sans-serif; 
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
+            color: #1d1d1f; 
+            font-family: 'Assistant', sans-serif; 
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+
+        .container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .grid-split { grid-template-columns: 1fr !important; }
+            .hide-mobile { display: none; }
+            h1 { font-size: 24px !important; }
+            .btn { width: 100%; justify-content: center; }
+            .part-row { grid-template-columns: 1fr !important; gap: 8px !important; padding-bottom: 15px; border-bottom: 1px solid #eee; }
         }
 
         .glass {
@@ -33,53 +42,45 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--apple-border);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 15px;
         }
 
         .btn {
-            padding: 12px 24px;
-            border-radius: 25px;
+            padding: 14px 20px;
+            border-radius: 12px;
             border: none;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
+            transition: 0.2s;
+            font-size: 15px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            justify-content: center;
         }
         .btn-primary { background: var(--apple-blue); color: #fff; }
-        .btn-secondary { background: rgba(0,0,0,0.05); color: var(--apple-dark); }
-        .btn:hover { opacity: 0.8; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
+        .btn-secondary { background: #e8e8ed; color: #1d1d1f; }
+        
         input, select {
             width: 100%;
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
+            padding: 12px;
+            border-radius: 10px;
             border: 1px solid var(--apple-border);
             background: #fff;
-            font-size: 15px;
-            outline: none;
+            font-size: 16px; /* מונע Zoom-in אוטומטי באייפון */
+            margin-bottom: 10px;
         }
 
-        label { display: block; font-size: 13px; font-weight: 600; color: var(--apple-gray); margin-bottom: 6px; }
+        label { font-size: 12px; font-weight: 700; color: var(--apple-gray); margin-bottom: 4px; display: block; }
 
-        @media print {
-            .noprint { display: none !important; }
-            .print-only { display: block !important; }
-            body { background: white; }
-            .glass { border: none; box-shadow: none; background: white; }
+        .loading-ring {
+            width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .loading-shimmer {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @media print { .noprint { display: none !important; } }
     </style>
 </head>
 <body>
@@ -96,17 +97,22 @@
             const [view, setView] = useState('home');
             const [reports, setReports] = useState(JSON.parse(localStorage.getItem('reports')) || []);
             const [activeReport, setActiveReport] = useState(null);
-            const [isLoadingCar, setIsLoadingCar] = useState(false);
+            const [loading, setLoading] = useState(false);
 
             useEffect(() => localStorage.setItem('reports', JSON.stringify(reports)), [reports]);
 
+            // תיקון משיכת נתונים עם Proxy למניעת CORS
             const fetchCarData = async (plate) => {
-                if (!plate || plate.length < 5) return;
-                setIsLoadingCar(true);
+                if (!plate) return;
+                setLoading(true);
+                const resource = "053ad247-c90d-4343-8397-3e4b8d5a4560";
+                const url = `https://data.gov.il/api/3/action/datastore_search?resource_id=${resource}&q=${plate}`;
+                
                 try {
-                    // פנייה ל-API הממשלתי הפתוח
-                    const response = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=053ad247-c90d-4343-8397-3e4b8d5a4560&q=${plate}`);
-                    const data = await response.json();
+                    // שימוש ב-Proxy כדי לעקוף חסימת דפדפן
+                    const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+                    const json = await res.json();
+                    const data = JSON.parse(json.contents);
                     
                     if (data.result.records.length > 0) {
                         const car = data.result.records[0];
@@ -114,122 +120,87 @@
                             ...prev,
                             client: {
                                 ...prev.client,
-                                plate: plate,
-                                model: `${car.tozeret_nm} ${car.kinuy_mishkari}`,
+                                model: `${car.tozeret_nm} ${car.kinuy_mishkari || ''}`,
                                 year: car.shnat_yitzur,
-                                extraInfo: `נפח: ${car.nefach_manoa} | בעלים קודמים: ${car.baalut}`
+                                plate: plate
                             }
                         }));
                     } else {
-                        alert("רכב לא נמצא במאגר משרד התחבורה");
+                        alert("הרכב לא נמצא במאגר");
                     }
-                } catch (error) {
-                    console.error("Error fetching car data", error);
+                } catch (e) {
+                    alert("שגיאה בחיבור למאגר הממשלתי");
                 } finally {
-                    setIsLoadingCar(false);
+                    setLoading(false);
                 }
             };
 
-            const createNew = () => {
-                setActiveReport({
-                    id: Date.now(),
-                    date: new Date().toLocaleDateString('he-IL'),
-                    client: { name: '', plate: '', model: '', year: '', value: 0 },
-                    parts: [], labor: 0, paint: 0
-                });
-                setView('edit');
-            };
-
             const stats = activeReport ? (() => {
-                const partsTotal = activeReport.parts.reduce((s, p) => s + (Number(p.price || 0) * (1 - (p.wear || 0)/100)), 0);
-                const subTotal = partsTotal + Number(activeReport.labor || 0) + Number(activeReport.paint || 0);
-                return { partsTotal, subTotal, total: subTotal * 1.17, damagePercent: activeReport.client.value > 0 ? (subTotal / activeReport.client.value) * 100 : 0 };
+                const partsSum = activeReport.parts.reduce((s, p) => s + (Number(p.price || 0) * (1 - (p.wear || 0)/100)), 0);
+                const subTotal = partsSum + Number(activeReport.labor || 0) + Number(activeReport.paint || 0);
+                return { total: subTotal * 1.17, damage: activeReport.client.value > 0 ? (subTotal / activeReport.client.value) * 100 : 0 };
             })() : null;
 
             return (
-                <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 20px' }}>
-                    <header className="noprint" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-                        <h1 style={{ fontSize: '30px', fontWeight: '700' }}>iShamay <span style={{fontWeight:200, color:'var(--apple-gray)'}}>Pro</span></h1>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <button className="btn btn-secondary" onClick={() => setView('home')}>דוחות</button>
-                            <button className="btn btn-primary" onClick={createNew}>+ שומה חדשה</button>
-                        </div>
+                <div className="container">
+                    <header className="noprint" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                        <h1 style={{fontSize:'28px'}}>iShamay</h1>
+                        <button className="btn btn-primary" onClick={() => {
+                            setActiveReport({ id: Date.now(), date: new Date().toLocaleDateString('he-IL'), client: {name:'', plate:'', model:'', year:'', value:0}, parts: [], labor:0, paint:0 });
+                            setView('edit');
+                        }}>+ חדש</button>
                     </header>
 
-                    {view === 'home' && (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                    {view === 'home' ? (
+                        <div style={{display:'grid', gap:'15px'}}>
+                            {reports.length === 0 && <p style={{textAlign:'center', opacity:0.5, marginTop:'50px'}}>אין דוחות שמורים</p>}
                             {reports.map(r => (
-                                <div key={r.id} className="glass" style={{ padding: '24px' }}>
-                                    <h3>{r.client.name || 'לקוח ללא שם'}</h3>
-                                    <p style={{color:'var(--apple-gray)'}}>{r.client.plate} | {r.client.model}</p>
-                                    <button className="btn btn-secondary" style={{marginTop:'15px', width:'100%'}} onClick={() => { setActiveReport(r); setView('edit'); }}>פתח שומה</button>
+                                <div key={r.id} className="glass" onClick={() => { setActiveReport(r); setView('edit'); }}>
+                                    <div style={{fontWeight:'700'}}>{r.client.name || 'ללא שם'}</div>
+                                    <div style={{fontSize:'13px', color:'var(--apple-gray)'}}>{r.client.plate} | {r.client.model}</div>
                                 </div>
                             ))}
                         </div>
-                    )}
+                    ) : (
+                        <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '20px' }}>
+                            <div className="glass">
+                                <label>מספר רישוי (חיפוש ממשלתי)</label>
+                                <div style={{display:'flex', gap:'8px', marginBottom:'20px'}}>
+                                    <input placeholder="00-000-00" value={activeReport.client.plate} onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, plate: e.target.value}})} />
+                                    <button className="btn btn-primary" style={{height:'46px'}} onClick={() => fetchCarData(activeReport.client.plate)}>
+                                        {loading ? <div className="loading-ring"></div> : 'חפש'}
+                                    </button>
+                                </div>
 
-                    {view === 'edit' && activeReport && (
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '30px' }}>
-                            <div className="glass" style={{ padding: '30px' }}>
-                                <section>
-                                    <h2 style={{marginBottom:'20px'}}>פרטי רכב (זיהוי ממשלתי)</h2>
-                                    <div style={{display:'flex', gap:'10px', alignItems:'flex-end', marginBottom:'20px'}}>
-                                        <div style={{flex:1}}>
-                                            <label>מספר רישוי</label>
-                                            <input 
-                                                style={{fontSize:'20px', fontWeight:'700', textAlign:'center', letterSpacing:'2px'}}
-                                                placeholder="00-000-00" 
-                                                value={activeReport.client.plate} 
-                                                onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, plate: e.target.value}})} 
-                                            />
-                                        </div>
-                                        <button 
-                                            className="btn btn-primary" 
-                                            style={{height:'48px'}} 
-                                            disabled={isLoadingCar}
-                                            onClick={() => fetchCarData(activeReport.client.plate)}
-                                        >
-                                            {isLoadingCar ? 'מחפש...' : '🔍 משוך נתונים'}
-                                        </button>
+                                <div className="grid-split" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
+                                    <div><label>שם לקוח</label><input value={activeReport.client.name} onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, name: e.target.value}})} /></div>
+                                    <div><label>דגם</label><input value={activeReport.client.model} readOnly style={{background:'#f9f9fb'}} /></div>
+                                    <div><label>שנת ייצור</label><input value={activeReport.client.year} readOnly style={{background:'#f9f9fb'}} /></div>
+                                    <div><label>ערך רכב ₪</label><input type="number" value={activeReport.client.value} onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, value: e.target.value}})} /></div>
+                                </div>
+
+                                <h3 style={{margin:'20px 0 10px'}}>חלפים</h3>
+                                {activeReport.parts.map((p, i) => (
+                                    <div key={i} className="part-row" style={{display:'grid', gridTemplateColumns:'2fr 1fr 1fr 40px', gap:'10px', marginBottom:'10px'}}>
+                                        <input placeholder="שם החלק" value={p.name} onChange={e => { const ps = [...activeReport.parts]; ps[i].name = e.target.value; setActiveReport({...activeReport, parts: ps}); }} />
+                                        <input type="number" placeholder="בלאי %" value={p.wear} onChange={e => { const ps = [...activeReport.parts]; ps[i].wear = e.target.value; setActiveReport({...activeReport, parts: ps}); }} />
+                                        <input type="number" placeholder="מחיר" value={p.price} onChange={e => { const ps = [...activeReport.parts]; ps[i].price = e.target.value; setActiveReport({...activeReport, parts: ps}); }} />
+                                        <button className="btn btn-secondary" style={{padding:'5px'}} onClick={() => setActiveReport({...activeReport, parts: activeReport.parts.filter((_, idx) => idx !== i)})}>✕</button>
                                     </div>
-
-                                    <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px'}}>
-                                        <div><label>שם לקוח</label><input value={activeReport.client.name} onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, name: e.target.value}})} /></div>
-                                        <div><label>דגם (אוטומטי)</label><input className={isLoadingCar ? 'loading-shimmer' : ''} value={activeReport.client.model} readOnly /></div>
-                                        <div><label>שנה</label><input value={activeReport.client.year} readOnly /></div>
-                                        <div><label>ערך רכב למחשבון (₪)</label><input type="number" value={activeReport.client.value} onChange={e => setActiveReport({...activeReport, client: {...activeReport.client, value: e.target.value}})} /></div>
-                                    </div>
-                                </section>
-
-                                <section style={{marginTop:'40px'}}>
-                                    <h3>חלפים לעבודה</h3>
-                                    {activeReport.parts.map((p, i) => (
-                                        <div key={i} style={{display:'flex', gap:'10px', marginTop:'10px'}}>
-                                            <input style={{flex:2}} placeholder="שם החלק" value={p.name} onChange={e => {
-                                                const ps = [...activeReport.parts]; ps[i].name = e.target.value; setActiveReport({...activeReport, parts: ps});
-                                            }} />
-                                            <input style={{flex:1}} type="number" placeholder="מחיר" value={p.price} onChange={e => {
-                                                const ps = [...activeReport.parts]; ps[i].price = e.target.value; setActiveReport({...activeReport, parts: ps});
-                                            }} />
-                                            <button className="btn" onClick={() => setActiveReport({...activeReport, parts: activeReport.parts.filter((_, idx) => idx !== i)})}>✕</button>
-                                        </div>
-                                    ))}
-                                    <button className="btn btn-secondary" style={{marginTop:'15px'}} onClick={() => setActiveReport({...activeReport, parts: [...activeReport.parts, {name:'', price:0}]})}>+ הוסף חלק</button>
-                                </section>
+                                ))}
+                                <button className="btn btn-secondary" onClick={() => setActiveReport({...activeReport, parts: [...activeReport.parts, {name:'', wear:0, price:0}]})}>+ הוסף חלק</button>
                             </div>
 
-                            <aside>
-                                <div className="glass" style={{ padding: '24px', position: 'sticky', top: '20px' }}>
-                                    <h3>סיכום שומה</h3>
-                                    <div style={{marginTop:'20px', fontSize:'24px', fontWeight:'700', color:'var(--apple-blue)'}}>₪{stats.total.toLocaleString()}</div>
-                                    <div style={{marginTop:'10px', fontSize:'14px'}}>נזק מהערך: {stats.damagePercent.toFixed(1)}%</div>
-                                    
-                                    <button className="btn btn-primary" style={{width:'100%', marginTop:'20px'}} onClick={() => {
-                                        setReports(prev => [...prev.filter(x => x.id !== activeReport.id), activeReport]);
-                                        window.print();
-                                    }}>הדפס דו"ח רשמי</button>
-                                </div>
-                            </aside>
+                            <div className="glass noprint" style={{height:'fit-content'}}>
+                                <h3>סיכום שומה</h3>
+                                <div style={{fontSize:'32px', fontWeight:'700', margin:'15px 0', color:'var(--apple-blue)'}}>₪{stats.total.toLocaleString()}</div>
+                                <div style={{fontSize:'14px', marginBottom:'20px'}}>נזק מהערך: <b>{stats.damage.toFixed(1)}%</b></div>
+                                <button className="btn btn-primary" style={{width:'100%'}} onClick={() => {
+                                    setReports(prev => [...prev.filter(x => x.id !== activeReport.id), activeReport]);
+                                    window.print();
+                                }}>הדפס דו"ח</button>
+                                <button className="btn btn-secondary" style={{width:'100%', marginTop:'10px'}} onClick={() => setView('home')}>ביטול וחזרה</button>
+                            </div>
                         </div>
                     )}
                 </div>
