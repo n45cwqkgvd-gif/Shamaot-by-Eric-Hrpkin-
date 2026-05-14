@@ -1,42 +1,41 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>iShamay Expert | מערכת שמאות מקצועית</title>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>iShamay - מערכת לימוד שמאות</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --ios-blue: #007aff; --ios-bg: #f2f2f7; --radius: 12px; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--ios-bg); font-family: 'Assistant', sans-serif; margin: 0; }
-
-        /* UI Styles */
-        .header { position: sticky; top: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 15px; display: flex; justify-content: space-between; border-bottom: 0.5px solid rgba(0,0,0,0.1); z-index: 1000; }
+        :root { --blue: #007aff; --bg: #f2f2f7; --card: #ffffff; }
+        * { box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+        body { background: var(--bg); margin: 0; padding: 0; color: #000; }
+        
+        /* ממשק משתמש */
+        .header { background: #fff; padding: 15px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .container { padding: 15px; max-width: 800px; margin: 0 auto; }
-        .card { background: #fff; border-radius: var(--radius); padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .field { margin-bottom: 12px; }
-        .field label { display: block; font-size: 11px; font-weight: 700; color: #8e8e93; margin-bottom: 4px; }
-        input { width: 100%; border: none; background: #f2f2f7; padding: 12px; border-radius: 10px; font-size: 16px; outline: none; }
-        .btn { border-radius: 10px; border: none; font-weight: 700; cursor: pointer; padding: 12px; transition: 0.2s; display: flex; align-items: center; gap: 8px; justify-content: center; }
-        .btn-main { background: var(--ios-blue); color: #fff; width: 100%; }
-        .btn-ghost { background: transparent; color: var(--ios-blue); font-size: 14px; }
+        .card { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .field { margin-bottom: 15px; }
+        .field label { display: block; font-size: 13px; font-weight: 700; color: #666; margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #fafafa; }
+        
+        .btn { padding: 12px 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-blue { background: var(--blue); color: #fff; width: 100%; }
+        .btn-search { background: #34c759; color: #fff; padding: 12px; margin-right: 5px; }
 
-        /* Tabs */
-        .tabs { display: flex; background: #e3e3e8; padding: 3px; border-radius: 10px; margin-bottom: 15px; }
-        .tab { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 600; border-radius: 8px; }
-        .tab.active { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+        .tab { flex: 1; padding: 10px; text-align: center; background: #e5e5ea; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .tab.active { background: var(--blue); color: #fff; }
 
-        /* Print Design - Professional Report */
+        /* עיצוב להדפסה - בסגנון דוחות דהן אריק */
         @media print {
             .noprint { display: none !important; }
+            .print-only { display: block !important; }
             body { background: #fff; }
-            .print-only { display: block !important; padding: 20px; font-family: "David", "Arial", serif; }
-            .p-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
-            .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border: 1px solid #000; padding: 10px; margin-bottom: 20px; }
-            .p-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            .p-table th, .p-table td { border: 1px solid #000; padding: 6px; text-align: right; font-size: 13px; }
+            .p-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+            .p-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+            .p-table th, .p-table td { border: 1px solid #000; padding: 8px; text-align: right; font-size: 14px; }
             .p-table th { background: #f0f0f0; }
-            .p-footer { margin-top: 30px; font-size: 12px; border-top: 1px solid #000; paddingTop: 10px; }
+            .p-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #000; padding: 10px; gap: 10px; margin-bottom: 20px; }
         }
         .print-only { display: none; }
     </style>
@@ -62,51 +61,73 @@
             useEffect(() => localStorage.setItem('sh_prof', JSON.stringify(shamaim)), [shamaim]);
             useEffect(() => localStorage.setItem('sh_reps', JSON.stringify(reports)), [reports]);
 
+            // מנוע חיפוש רב-נתיבי לעקיפת חסימות
             const fetchCar = async (plate) => {
                 if(!plate) return;
                 setLoading(true);
-                try {
-                    const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://data.gov.il/api/3/action/datastore_search?resource_id=053ad247-c90d-4343-8397-3e4b8d5a4560&filters={"mispar_rechev":"${plate}"}`)}`);
-                    const data = JSON.parse((await res.json()).contents);
-                    const car = data.result.records[0];
-                    if(car) {
-                        setActive({...active, client: {...active.client, plate, model: `${car.tozeret_nm} ${car.kinuy_mishkari || ''}`, year: car.shnat_yitzur}});
-                    } else alert("הרכב לא נמצא במאגר הממשלתי. הזן פרטים ידנית.");
-                } catch (e) {
-                    alert("המערכת הממשלתית עמוסה. אנא הזן את פרטי הרכב ידנית.");
+                const apiURL = `https://data.gov.il/api/3/action/datastore_search?resource_id=053ad247-c90d-4343-8397-3e4b8d5a4560&filters={"mispar_rechev":"${plate}"}`;
+                
+                // רשימת פרוקסים לעקיפת CORS
+                const proxies = [
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(apiURL)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(apiURL)}`
+                ];
+
+                let success = false;
+                for (let url of proxies) {
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        // פענוח התוצאה לפי סוג הפרוקסי
+                        const json = typeof data.contents === 'string' ? JSON.parse(data.contents) : data;
+                        
+                        if(json.result && json.result.records[0]) {
+                            const car = json.result.records[0];
+                            setActive({...active, client: {
+                                ...active.client,
+                                plate,
+                                model: `${car.tozeret_nm} ${car.kinuy_mishkari || ''}`,
+                                year: car.shnat_yitzur
+                            }});
+                            success = true;
+                            break;
+                        }
+                    } catch (e) { console.log("Trying next proxy..."); }
                 }
+
+                if(!success) alert("המאגר הממשלתי לא מגיב. אנא הזן דגם ושנה ידנית בטאב 'רכב'.");
                 setLoading(false);
             };
 
-            const totals = () => {
-                if(!active) return { sub: 0, tax: 0, grand: 0, pct: 0 };
+            const calc = () => {
+                if(!active) return { sub: 0, tax: 0, total: 0, pct: 0 };
                 const parts = active.parts.reduce((s, p) => s + (Number(p.p || 0) * (1 - (p.w || 0)/100)), 0);
                 const sub = parts + Number(active.labor || 0) + Number(active.paint || 0);
-                return { sub, tax: sub * 0.17, grand: sub * 1.17, pct: active.client.value > 0 ? (sub / active.client.value) * 100 : 0 };
+                return { sub, tax: sub * 0.17, total: sub * 1.17, pct: active.client.value > 0 ? (sub / active.client.value) * 100 : 0 };
             };
 
             return (
                 <div>
                     <div className="header noprint">
-                        <b onClick={()=>setView('home')}>iShamay PRO</b>
-                        <button className="btn-ghost" onClick={()=>setView('config')}>⚙️ פרופיל שמאי</button>
+                        <b style={{fontSize:20}}>iShamay <span style={{color:'var(--blue)'}}>PRO</span></b>
+                        <button className="btn" onClick={() => setView('config')}>⚙️ הגדרות שמאי</button>
                     </div>
 
                     <div className="container">
                         {view === 'config' && (
                             <div className="card">
-                                <h3>הגדרות שמאי קבועות</h3>
+                                <h3>פרטי שמאי קבועים</h3>
                                 <div className="field"><label>שם השמאי / משרד</label><input value={shamaim.name} onChange={e=>setShamaim({...shamaim, name:e.target.value})} /></div>
                                 <div className="field"><label>מספר רישיון</label><input value={shamaim.lic} onChange={e=>setShamaim({...shamaim, lic:e.target.value})} /></div>
                                 <div className="field"><label>כתובת</label><input value={shamaim.addr} onChange={e=>setShamaim({...shamaim, addr:e.target.value})} /></div>
                                 <div className="field"><label>טלפון</label><input value={shamaim.tel} onChange={e=>setShamaim({...shamaim, tel:e.target.value})} /></div>
-                                <button className="btn btn-main" onClick={()=>setView('home')}>שמור פרטים</button>
+                                <button className="btn btn-blue" onClick={()=>setView('home')}>שמור וחזור</button>
                             </div>
                         )}
 
                         {view === 'home' && (
                             <div className="noprint">
-                                <button className="btn btn-main" onClick={()=>{setActive({id:Date.now(), date:new Date().toLocaleDateString('he-IL'), client:{name:'', plate:'', model:'', year:'', value:0}, parts:[], labor:0, paint:0}); setView('edit');}}>+ שומה חדשה</button>
+                                <button className="btn btn-blue" onClick={()=>{setActive({id:Date.now(), date:new Date().toLocaleDateString('he-IL'), client:{name:'', plate:'', model:'', year:'', value:0}, parts:[], labor:0, paint:0}); setView('edit');}}>+ שומה חדשה</button>
                                 <div style={{marginTop:20}}>
                                     {reports.map(r => (
                                         <div key={r.id} className="card" onClick={()=>{setActive(r); setView('edit');}}>
@@ -121,38 +142,38 @@
                             <div className="noprint">
                                 <div className="tabs">
                                     <div className={`tab ${tab==='car'?'active':''}`} onClick={()=>setTab('car')}>רכב</div>
-                                    <div className={`tab ${tab==='dmg'?'active':''}`} onClick={()=>setTab('dmg')}>חלפים</div>
+                                    <div className={`tab ${tab==='dmg'?'active':''}`} onClick={()=>setTab('dmg')}>נזקים</div>
                                     <div className={`tab ${tab==='fin'?'active':''}`} onClick={()=>setTab('fin')}>סיכום</div>
                                 </div>
 
                                 {tab === 'car' && (
                                     <div className="card">
                                         <div className="field">
-                                            <label>מספר רישוי (חפש או הזן ידנית)</label>
-                                            <div style={{display:'flex', gap:8}}>
-                                                <input style={{fontWeight:800}} value={active.client.plate} onChange={e=>setActive({...active, client:{...active.client, plate:e.target.value}})} />
-                                                <button className="btn btn-main" style={{width:60}} onClick={()=>fetchCar(active.client.plate)}>{loading?'..':'🔍'}</button>
+                                            <label>מספר רישוי (חובה לחיפוש)</label>
+                                            <div style={{display:'flex'}}>
+                                                <input value={active.client.plate} onChange={e=>setActive({...active, client:{...active.client, plate:e.target.value}})} />
+                                                <button className="btn btn-search" onClick={()=>fetchCar(active.client.plate)}>{loading ? '...' : '🔍'}</button>
                                             </div>
                                         </div>
                                         <div className="field"><label>שם לקוח</label><input value={active.client.name} onChange={e=>setActive({...active, client:{...active.client, name:e.target.value}})} /></div>
-                                        <div className="field"><label>דגם (מיוצר אוטומטית)</label><input value={active.client.model} onChange={e=>setActive({...active, client:{...active.client, model:e.target.value}})} /></div>
-                                        <div className="field"><label>ערך רכב בשוק</label><input type="number" value={active.client.value} onChange={e=>setActive({...active, client:{...active.client, value:e.target.value}})} /></div>
+                                        <div className="field"><label>דגם רכב</label><input value={active.client.model} onChange={e=>setActive({...active, client:{...active.client, model:e.target.value}})} /></div>
+                                        <div className="field"><label>ערך רכב (לחישוב אחוז נזק)</label><input type="number" value={active.client.value} onChange={e=>setActive({...active, client:{...active.client, value:e.target.value}})} /></div>
                                     </div>
                                 )}
 
                                 {tab === 'dmg' && (
                                     <div>
                                         {active.parts.map((p,i)=>(
-                                            <div key={i} className="card" style={{padding:10}}>
-                                                <input placeholder="שם החלק" value={p.n} onChange={e=>{const ps=[...active.parts]; ps[i].n=e.target.value; setActive({...active, parts:ps});}} />
-                                                <div style={{display:'flex', gap:5, marginTop:5}}>
+                                            <div key={i} className="card" style={{padding:12}}>
+                                                <input placeholder="תיאור החלק" value={p.n} onChange={e=>{const ps=[...active.parts]; ps[i].n=e.target.value; setActive({...active, parts:ps});}} />
+                                                <div style={{display:'flex', gap:5, marginTop:8}}>
                                                     <input type="number" placeholder="בלאי %" value={p.w} onChange={e=>{const ps=[...active.parts]; ps[i].w=e.target.value; setActive({...active, parts:ps});}} />
                                                     <input type="number" placeholder="מחיר" value={p.p} onChange={e=>{const ps=[...active.parts]; ps[i].p=e.target.value; setActive({...active, parts:ps});}} />
-                                                    <button className="btn" onClick={()=>{const ps=active.parts.filter((_,idx)=>idx!==i); setActive({...active, parts:ps});}}>🗑️</button>
+                                                    <button onClick={()=>{const ps=active.parts.filter((_,idx)=>idx!==i); setActive({...active, parts:ps});}}>🗑️</button>
                                                 </div>
                                             </div>
                                         ))}
-                                        <button className="btn btn-ghost" style={{width:'100%'}} onClick={()=>setActive({...active, parts:[...active.parts, {n:'', w:0, p:0}]})}>+ הוסף שורה</button>
+                                        <button className="btn" style={{width:'100%', background:'#ddd'}} onClick={()=>setActive({...active, parts:[...active.parts, {n:'', w:0, p:0}]})}>+ הוסף חלק</button>
                                         <div className="card" style={{marginTop:15}}>
                                             <div className="field"><label>עבודות פחחות/מכונאות</label><input type="number" value={active.labor} onChange={e=>setActive({...active, labor:e.target.value})} /></div>
                                             <div className="field"><label>עבודות צבע</label><input type="number" value={active.paint} onChange={e=>setActive({...active, paint:e.target.value})} /></div>
@@ -162,50 +183,50 @@
 
                                 {tab === 'fin' && (
                                     <div className="card" style={{textAlign:'center'}}>
-                                        <div style={{fontSize:14, color:'#8e8e93'}}>אחוז נזק</div>
-                                        <div style={{fontSize:42, fontWeight:900, color:totals().pct > 50 ? 'red' : 'blue'}}>{totals().pct.toFixed(1)}%</div>
-                                        <div style={{fontSize:24, fontWeight:800, margin:'10px 0'}}>₪{totals().grand.toLocaleString()}</div>
-                                        <button className="btn btn-main" onClick={()=>{setReports(prev=>[...prev.filter(x=>x.id!==active.id), active]); window.print();}}>הדפס דו"ח מקצועי</button>
+                                        <h3>סיכום שומה</h3>
+                                        <div style={{fontSize:40, fontWeight:800, color:calc().pct > 50 ? 'red' : 'green'}}>{calc().pct.toFixed(1)}% נזק</div>
+                                        <div style={{fontSize:24, margin:'10px 0'}}>₪{calc().total.toLocaleString()}</div>
+                                        <button className="btn btn-blue" onClick={()=>{setReports(prev=>[...prev.filter(x=>x.id!==active.id), active]); window.print();}}>הדפס דו"ח מקצועי</button>
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        {/* Professional PDF Layout */}
+                        {/* תבנית הדפסה רשמית */}
                         {active && (
                             <div className="print-only">
                                 <div className="p-header">
                                     <h1 style={{margin:0}}>{shamaim.name || 'משרד שמאות רכב'}</h1>
                                     <p style={{margin:2}}>{shamaim.addr} | טלפון: {shamaim.tel} | רישיון: {shamaim.lic}</p>
                                 </div>
-                                <h3 style={{textAlign:'center', textDecoration:'underline'}}>חוות דעת שומת נזק</h3>
+                                <h2 style={{textAlign:'center'}}>חוות דעת שומת נזק</h2>
                                 <div className="p-grid">
                                     <div><b>תאריך:</b> {active.date}</div>
                                     <div><b>מספר רישוי:</b> {active.client.plate}</div>
                                     <div><b>שם הלקוח:</b> {active.client.name}</div>
                                     <div><b>דגם/שנה:</b> {active.client.model} ({active.client.year})</div>
                                     <div><b>ערך רכב:</b> ₪{Number(active.client.value).toLocaleString()}</div>
-                                    <div><b>אחוז נזק:</b> {totals().pct.toFixed(1)}%</div>
+                                    <div><b>אחוז נזק:</b> {calc().pct.toFixed(1)}%</div>
                                 </div>
                                 <table className="p-table">
-                                    <thead><tr><th>תיאור הנזק / חלקים / עבודות</th><th>בלאי %</th><th>סכום ₪</th></tr></thead>
+                                    <thead><tr><th>תיאור הנזק / חלפים / עבודות</th><th>בלאי %</th><th>סכום ₪</th></tr></thead>
                                     <tbody>
                                         {active.parts.map((p,i)=>(<tr key={i}><td>{p.n}</td><td>{p.w}%</td><td>{Number(p.p).toLocaleString()}</td></tr>))}
                                         <tr><td>עבודות פחחות ומכונאות</td><td>-</td><td>{Number(active.labor).toLocaleString()}</td></tr>
                                         <tr><td>עבודות צבע</td><td>-</td><td>{Number(active.paint).toLocaleString()}</td></tr>
                                     </tbody>
                                     <tfoot>
-                                        <tr><td colSpan="2"><b>נזק גולמי:</b></td><td><b>₪{totals().sub.toLocaleString()}</b></td></tr>
-                                        <tr><td colSpan="2">מע"מ (17%):</td><td>₪{totals().tax.toLocaleString()}</td></tr>
-                                        <tr style={{fontSize:16}}><td colSpan="2"><b>סה"כ כולל מע"מ:</b></td><td><b>₪{totals().grand.toLocaleString()}</b></td></tr>
+                                        <tr><td colSpan="2">נזק גולמי:</td><td>₪{calc().sub.toLocaleString()}</td></tr>
+                                        <tr><td colSpan="2">מע"מ (17%):</td><td>₪{calc().tax.toLocaleString()}</td></tr>
+                                        <tr><td colSpan="2"><b>סה"כ כולל מע"מ:</b></td><td><b>₪{calc().total.toLocaleString()}</b></td></tr>
                                     </tfoot>
                                 </table>
-                                <div className="p-footer">
-                                    <p><b>הצהרה:</b> אני נותן חוות דעתי זו במקום עדות בבית המשפט, והריני מצהיר כי ידוע לי שלעניין הוראות החוק הפלילי בדבר עדות שקר, דין חוות דעתי זו, כשהיא חתומה על ידי, כדין עדות בבית המשפט.</p>
-                                    <br/><br/>
-                                    <div style={{display:'flex', justifyContent:'space-between'}}>
+                                <div style={{marginTop:30, fontSize:12}}>
+                                    <b>הצהרה משפטית:</b> אני נותן חוות דעתי זו במקום עדות בבית המשפט, והריני מצהיר כי ידוע לי שלעניין הוראות החוק הפלילי בדבר עדות שקר, דין חוות דעתי זו, כשהיא חתומה על ידי, כדין עדות בבית המשפט.
+                                    <br/><br/><br/>
+                                    <div style={{display:'flex', justifyBetween:'space-between'}}>
                                         <span>________________<br/>חתימת השמאי</span>
-                                        <span><b>מספר תיק:</b> {active.id}</span>
+                                        <span style={{marginRight:'auto'}}><b>מספר תיק:</b> {active.id}</span>
                                     </div>
                                 </div>
                             </div>
