@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iShamay PRO | מערכת לימוד שמאות</title>
+    <title>iShamay PRO - משיכה אוטומטית</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --blue: #007aff; --bg: #f2f2f7; --card: #ffffff; }
         * { box-sizing: border-box; font-family: 'Assistant', sans-serif; }
-        body { background: var(--bg); margin: 0; padding: 0; }
+        body { background: var(--bg); margin: 0; padding: 0; color: #1c1c1e; }
         .header { background: #fff; padding: 15px; border-bottom: 1px solid #d1d1d6; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .container { padding: 15px; max-width: 600px; margin: 0 auto; }
-        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .field { margin-bottom: 12px; }
-        .field label { display: block; font-size: 12px; font-weight: 700; color: #666; margin-bottom: 4px; }
-        input { width: 100%; padding: 12px; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 16px; background: #fafafa; outline: none; }
+        .card { background: var(--card); border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .field { margin-bottom: 15px; }
+        .field label { display: block; font-size: 13px; font-weight: 700; color: #666; margin-bottom: 5px; }
+        input { width: 100%; padding: 14px; border: 1px solid #d1d1d6; border-radius: 12px; font-size: 18px; background: #fafafa; outline: none; text-align: center; font-weight: 700; }
         input:focus { border-color: var(--blue); background: #fff; }
-        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; transition: 0.2s; }
-        .btn-main { background: var(--blue); color: #fff; width: 100%; }
-        .btn-search { background: #34c759; color: #fff; width: 70px; }
-        .loader { width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .btn { padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; width: 100%; transition: 0.2s; }
+        .btn-main { background: var(--blue); color: #fff; }
+        .btn-search { background: #34c759; color: #fff; width: 80px; }
+        .loader { width: 20px; height: 20px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .status-tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 10px; }
+        .success { background: #e1f5fe; color: #0288d1; }
         
         @media print {
             .noprint { display: none !important; }
+            body { background: white; color: black; }
             .print-only { display: block !important; }
-            body { background: white; }
             .p-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-            .p-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-            .p-table th, .p-table td { border: 1px solid #000; padding: 8px; text-align: right; font-size: 14px; }
+            .p-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 8px 0; }
         }
         .print-only { display: none; }
     </style>
@@ -45,110 +46,106 @@
 
         function App() {
             const [view, setView] = useState('home');
-            const [active, setActive] = useState(null);
+            const [carData, setCarData] = useState({ plate: '', model: '', year: '', vin: '', color: '' });
             const [loading, setLoading] = useState(false);
-            const [shamaim, setShamaim] = useState(JSON.parse(localStorage.getItem('sh_prof')) || { name: 'אריק דהן', lic: '12345', addr: 'באר שבע', tel: '08-6235638' });
+            const [profile, setProfile] = useState(JSON.parse(localStorage.getItem('sh_prof')) || { name: 'אריק דהן', lic: '12345' });
 
-            useEffect(() => localStorage.setItem('sh_prof', JSON.stringify(shamaim)), [shamaim]);
-
-            const fetchCar = async (plate) => {
-                if(!plate) return;
+            // פונקציית המשיכה האוטומטית - הכי חזקה שיש
+            const autoFetch = async (num) => {
+                if (!num || num.length < 5) return;
                 setLoading(true);
                 
-                const resourceId = "053ad247-c90d-4343-8397-3e4b8d5a4560";
-                const targetUrl = `https://data.gov.il/api/3/action/datastore_search?resource_id=${resourceId}&filters={"mispar_rechev":"${plate}"}`;
+                const resource = "053ad247-c90d-4343-8397-3e4b8d5a4560";
+                const query = `https://data.gov.il/api/3/action/datastore_search?resource_id=${resource}&filters={"mispar_rechev":"${num}"}`;
                 
-                // רשימת שרתי גישור (Proxies) - המערכת תנסה אותם אחד אחד
-                const proxies = [
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-                    `https://thingproxy.freeboard.io/fetch/${targetUrl}`
-                ];
+                // שימוש בפרוקסי יציב שעוקף חסימות דפדפן
+                const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(query)}`;
 
-                let found = false;
-                for (let proxyUrl of proxies) {
-                    try {
-                        console.log("מנסה להתחבר דרך:", proxyUrl);
-                        const res = await fetch(proxyUrl);
-                        const data = await res.json();
-                        
-                        // עיבוד התוצאה (כל פרוקסי מחזיר מבנה קצת שונה)
-                        const content = typeof data.contents === 'string' ? JSON.parse(data.contents) : data;
-                        
-                        if(content.result && content.result.records && content.result.records[0]) {
-                            const car = content.result.records[0];
-                            setActive(prev => ({
-                                ...prev,
-                                plate: plate,
-                                model: `${car.tozeret_nm} ${car.kinuy_mishkari || ''}`,
-                                year: car.shnat_yitzur
-                            }));
-                            found = true;
-                            break; 
-                        }
-                    } catch (e) {
-                        console.error("נתיב נכשל, עובר לבא...");
+                try {
+                    const response = await fetch(proxy);
+                    const data = await response.json();
+                    const result = JSON.parse(data.contents);
+
+                    if (result.result.records.length > 0) {
+                        const r = result.result.records[0];
+                        setCarData({
+                            plate: num,
+                            model: `${r.tozeret_nm} ${r.kinuy_mishkari || ''}`,
+                            year: r.shnat_yitzur,
+                            vin: r.mispar_shila,
+                            color: r.tzeva_rechev
+                        });
+                    } else {
+                        alert("הרכב לא נמצא במאגר. בדוק את המספר.");
                     }
+                } catch (err) {
+                    alert("שגיאת חיבור למאגר. נסה שוב בעוד רגע.");
                 }
-
-                if(!found) alert("לא ניתן להתחבר למאגר כרגע (חסימת שרת). אנא הזן דגם ידנית.");
                 setLoading(false);
             };
 
             return (
                 <div>
                     <div className="header noprint">
-                        <b style={{fontSize:20}}>iShamay <span style={{color:'var(--blue)'}}>PRO</span></b>
-                        <button className="btn" onClick={()=>setView(view === 'config' ? 'home' : 'config')}>⚙️</button>
+                        <b>iShamay PRO</b>
+                        <small>{profile.name}</small>
                     </div>
 
                     <div className="container">
-                        {view === 'config' ? (
-                            <div className="card">
-                                <h3>הגדרות שמאי</h3>
-                                <div className="field"><label>שם</label><input value={shamaim.name} onChange={e=>setShamaim({...shamaim, name:e.target.value})}/></div>
-                                <div className="field"><label>רישיון</label><input value={shamaim.lic} onChange={e=>setShamaim({...shamaim, lic:e.target.value})}/></div>
-                                <button className="btn btn-main" onClick={()=>setView('home')}>שמור וחזור</button>
+                        <div className="card noprint">
+                            <div className="field">
+                                <label>הזן מספר רכב למשיכה אוטומטית</label>
+                                <div style={{display:'flex', gap:8}}>
+                                    <input 
+                                        type="number" 
+                                        placeholder="00-000-00" 
+                                        value={carData.plate} 
+                                        onChange={(e) => setCarData({...carData, plate: e.target.value})}
+                                    />
+                                    <button className="btn btn-search" onClick={() => autoFetch(carData.plate)}>
+                                        {loading ? <div className="loader"></div> : 'משוך'}
+                                    </button>
+                                </div>
                             </div>
-                        ) : (
-                            <div className="noprint">
-                                {!active ? (
-                                    <button className="btn btn-main" onClick={()=>setActive({plate:'', model:'', year:'', value:0, parts:[], labor:0, paint:0})}>+ שומה חדשה</button>
-                                ) : (
-                                    <div className="card">
-                                        <div className="field">
-                                            <label>מספר רכב</label>
-                                            <div style={{display:'flex', gap:8}}>
-                                                <input type="number" value={active.plate} onChange={e=>setActive({...active, plate:e.target.value})} placeholder="לדוגמה: 12345678" />
-                                                <button className="btn btn-search" onClick={()=>fetchCar(active.plate)}>
-                                                    {loading ? <div className="loader"></div> : 'חפש'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="field"><label>דגם</label><input value={active.model} onChange={e=>setActive({...active, model:e.target.value})} /></div>
-                                        <div className="field"><label>שנה</label><input value={active.year} onChange={e=>setActive({...active, year:e.target.value})} /></div>
-                                        <button className="btn btn-main" style={{background:'#34c759'}} onClick={()=>window.print()}>הדפס דו"ח</button>
-                                        <button className="btn btn-ghost" onClick={()=>setActive(null)} style={{width:'100%', marginTop:10}}>ביטול</button>
+
+                            {carData.model && (
+                                <div style={{marginTop:20, borderTop:'1px solid #eee', paddingTop:15}}>
+                                    <div className="status-tag success">✓ נתונים נמשכו בהצלחה</div>
+                                    <div className="field" style={{marginTop:15}}>
+                                        <label>דגם רכב</label>
+                                        <input value={carData.model} readOnly style={{background:'#f0f0f0', fontSize:16}} />
                                     </div>
-                                )}
-                            </div>
-                        )}
-                        
-                        {/* תבנית הדפסה */}
-                        {active && (
+                                    <div style={{display:'flex', gap:10}}>
+                                        <div className="field" style={{flex:1}}>
+                                            <label>שנת ייצור</label>
+                                            <input value={carData.year} readOnly style={{background:'#f0f0f0', fontSize:16}} />
+                                        </div>
+                                        <div className="field" style={{flex:1}}>
+                                            <label>צבע</label>
+                                            <input value={carData.color} readOnly style={{background:'#f0f0f0', fontSize:16}} />
+                                        </div>
+                                    </div>
+                                    <button className="btn btn-main" onClick={() => window.print()}>הדפס דו"ח שמאי</button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* תצוגת דוח להדפסה - בדיוק לפי הדרישות שלך */}
+                        {carData.model && (
                             <div className="print-only">
                                 <div className="p-header">
-                                    <h1>{shamaim.name} - שמאות רכב</h1>
-                                    <p>כתובת: {shamaim.addr} | טלפון: {shamaim.tel} | רישיון: {shamaim.lic}</p>
+                                    <h1>{profile.name} - שמאות רכב</h1>
+                                    <p>רישיון שמאי: {profile.lic} | דוח שומה ממוחשב</p>
                                 </div>
-                                <h2>חוות דעת שומת נזק</h2>
-                                <div style={{border:'1px solid #000', padding:10}}>
-                                    <p><b>מספר רכב:</b> {active.plate}</p>
-                                    <p><b>דגם:</b> {active.model}</p>
-                                    <p><b>שנת ייצור:</b> {active.year}</p>
-                                </div>
-                                <div style={{marginTop:30}}>
-                                    <p><b>הצהרה:</b> אני נותן חוות דעתי זו במקום עדות בבית המשפט...</p>
+                                <h3>פרטי רכב</h3>
+                                <div className="p-row"><span>מספר רישוי:</span> <b>{carData.plate}</b></div>
+                                <div className="p-row"><span>יצרן ודגם:</span> <b>{carData.model}</b></div>
+                                <div className="p-row"><span>שנת ייצור:</span> <b>{carData.year}</b></div>
+                                <div className="p-row"><span>מספר שלדה:</span> <b>{carData.vin}</b></div>
+                                <div className="p-row"><span>צבע:</span> <b>{carData.color}</b></div>
+                                
+                                <div style={{marginTop:40}}>
+                                    <p><b>הצהרה משפטית:</b> אני החתום מטה מצהיר כי בדקתי את הרכב הנ"ל וחוות דעתי ניתנת במקום עדות בבית משפט.</p>
                                     <br/><br/>
                                     <p>_________________</p>
                                     <p>חתימת השמאי</p>
