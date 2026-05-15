@@ -2,79 +2,72 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>iShamay PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Assistant', sans-serif; background: #f2f2f7; margin: 0; padding: 20px; direction: rtl; }
-        .card { background: white; max-width: 500px; margin: 20px auto; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { color: #007aff; text-align: center; font-weight: 800; }
-        input { width: 100%; padding: 15px; margin: 15px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 22px; text-align: center; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #007aff; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .result-box { display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #f2f2f7; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 18px; }
-        .val { font-weight: 800; }
-        .loader { display: none; text-align: center; color: #666; margin: 10px 0; }
+        body { font-family: 'Assistant', sans-serif; background: #f2f2f7; margin: 0; padding: 15px; direction: rtl; }
+        .card { background: white; max-width: 450px; margin: 10px auto; padding: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        h2 { color: #007aff; text-align: center; margin-bottom: 20px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 22px; text-align: center; outline: none; margin-bottom: 15px; box-sizing: border-box; }
+        button { width: 100%; padding: 16px; background: #007aff; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; }
+        .result-box { display: none; margin-top: 20px; border-top: 2px solid #f2f2f7; padding-top: 15px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 17px; }
+        .val { font-weight: 800; color: #000; }
+        .loader { display: none; text-align: center; margin: 10px 0; color: #666; }
     </style>
 </head>
 <body>
 
 <div class="card">
     <h2>iShamay PRO</h2>
-    <input type="number" id="plateInput" placeholder="הכנס מספר רכב">
-    <button id="searchBtn">שליפת נתונים</button>
-    <div id="loader" class="loader">מתחבר למאגר הממשלתי...</div>
+    <input type="number" id="pIn" placeholder="הכנס מספר רכב">
+    <button id="btn">חיפוש נתונים</button>
+    <div id="ld" class="loader">מתחבר למאגר הממשלתי...</div>
 
-    <div id="result" class="result-box">
+    <div id="res" class="result-box">
         <div class="row"><span>יצרן:</span> <span id="rMake" class="val"></span></div>
         <div class="row"><span>דגם:</span> <span id="rModel" class="val"></span></div>
-        <div class="row"><span>שנה:</span> <span id="rYear" class="val"></span></div>
-        <div class="row"><span>שלדה:</span> <span id="rVin" class="val"></span></div>
+        <div class="row"><span>שנת ייצור:</span> <span id="rYear" class="val"></span></div>
+        <div class="row"><span>מספר שלדה:</span> <span id="rVin" class="val"></span></div>
         <button onclick="window.print()" style="background:#34c759; margin-top:10px;">הדפסת דו"ח</button>
     </div>
 </div>
 
 <script>
+    // פונקציית הקבלה של הנתונים
     function handleResponse(data) {
-        const loader = document.getElementById('loader');
-        const resBox = document.getElementById('result');
-        loader.style.display = 'none';
-
+        document.getElementById('ld').style.display = 'none';
         if (data.success && data.result.records.length > 0) {
             const v = data.result.records[0];
             document.getElementById('rMake').innerText = v.tozeret_nm;
-            document.getElementById('rModel').innerText = v.kinuy_mishkari || "לא צוין";
+            document.getElementById('rModel').innerText = v.kinuy_mishkari || "כללי";
             document.getElementById('rYear').innerText = v.shnat_yitzur;
             document.getElementById('rVin').innerText = v.mispar_shila;
-            resBox.style.display = 'block';
+            document.getElementById('res').style.display = 'block';
         } else {
-            alert("הרכב לא נמצא במאגר");
+            alert("הרכב לא נמצא. וודא שהמספר תקין.");
         }
     }
 
-    document.getElementById('searchBtn').onclick = () => {
-        const plate = document.getElementById('plateInput').value.trim();
-        if (plate.length < 5) return alert("מספר רכב לא תקין");
+    document.getElementById('btn').onclick = () => {
+        const plate = document.getElementById('pIn').value.trim();
+        if (plate.length < 5) return;
 
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('result').style.display = 'none';
+        document.getElementById('ld').style.display = 'block';
+        document.getElementById('res').style.display = 'none';
 
-        // מחיקת סקריפט קודם אם קיים
-        const oldScript = document.getElementById('apiScript');
-        if (oldScript) oldScript.remove();
+        const old = document.getElementById('api');
+        if (old) old.remove();
 
-        // יצירת בקשת JSONP שעוקפת חסימות CORS
-        const script = document.createElement('script');
-        script.id = 'apiScript';
-        const resourceId = "053ad247-c90d-4343-8397-3e4b8d5a4560";
-        script.src = `https://data.gov.il/api/3/action/datastore_search?resource_id=${resourceId}&q=${plate}&callback=handleResponse`;
+        const s = document.createElement('script');
+        s.id = 'api';
         
-        script.onerror = () => {
-            document.getElementById('loader').style.display = 'none';
-            alert("שגיאת חיבור לממשלה. נסה שוב.");
-        };
-
-        document.body.appendChild(script);
+        // ה-ID החדש והמעודכן (Resource ID) שאמור לעבוד עכשיו:
+        const RID = "c8b9f9c8-4612-4068-934f-d4291121c68c"; 
+        s.src = `https://data.gov.il/api/3/action/datastore_search?resource_id=${RID}&q=${plate}&callback=handleResponse`;
+        
+        document.body.appendChild(s);
     };
 </script>
 
