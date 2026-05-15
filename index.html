@@ -1,75 +1,1055 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iShamay PRO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Assistant', sans-serif; background: #f2f2f7; margin: 0; padding: 15px; direction: rtl; }
-        .card { background: white; max-width: 450px; margin: 10px auto; padding: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        h2 { color: #007aff; text-align: center; margin-bottom: 20px; }
-        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 22px; text-align: center; outline: none; margin-bottom: 15px; box-sizing: border-box; }
-        button { width: 100%; padding: 16px; background: #007aff; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; }
-        .result-box { display: none; margin-top: 20px; border-top: 2px solid #f2f2f7; padding-top: 15px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 17px; }
-        .val { font-weight: 800; color: #000; }
-        .loader { display: none; text-align: center; margin: 10px 0; color: #666; }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>שמאות רכב — חוות דעת מקצועית</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f5f5f7;--surface:#ffffff;--surface2:#fbfbfd;
+  --ink:#1d1d1f;--ink2:#424245;--ink3:#6e6e73;--ink4:#aeaeb2;--ink5:#d2d2d7;
+  --gold:#8b6914;--gold-l:#bf9b30;
+  --green:#1d7a4a;--amber:#8a5a00;--red:#c0392b;--blue:#0071e3;
+  --rule:rgba(0,0,0,.1);--rule2:rgba(0,0,0,.06);
+  --shadow:0 2px 12px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+  --shadow-md:0 4px 24px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.06);
+  --shadow-lg:0 12px 48px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
+  --font:-apple-system,BlinkMacSystemFont,'Heebo','SF Pro Display','SF Pro Text',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);direction:rtl;min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:-.01em}
+input,select,textarea,button{font-family:var(--font)}
+button{cursor:pointer}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fu{animation:fadeUp .6s cubic-bezier(.22,1,.36,1) both}
+.fu-1{animation-delay:.05s}.fu-2{animation-delay:.12s}.fu-3{animation-delay:.18s}.fu-4{animation-delay:.24s}.fu-5{animation-delay:.3s}
+@media print{.noprint{display:none!important}body{background:#fff}}
+@page{margin:14mm 16mm}
+
+.nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(245,245,247,.82);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid rgba(0,0,0,.06);
+  height:54px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+}
+.brand{font-size:18px;font-weight:600;letter-spacing:-.02em}
+.brand-dot{display:inline-block;width:5px;height:5px;background:var(--gold-l);border-radius:50%;margin-left:8px;vertical-align:middle}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:980px;font-size:13px;font-weight:500;letter-spacing:-.01em;border:none;white-space:nowrap;transition:all .25s cubic-bezier(.22,1,.36,1);font-family:var(--font)}
+.btn-p{background:var(--ink);color:#fff}
+.btn-p:hover{background:#3a3a3c;transform:scale(1.02)}
+.btn-s{background:rgba(0,0,0,.06);color:var(--ink)}
+.btn-s:hover{background:rgba(0,0,0,.1)}
+.btn-g{background:linear-gradient(135deg,var(--gold-l) 0%,#a0801f 100%);color:#fff;box-shadow:0 2px 8px rgba(191,155,48,.25)}
+.btn-g:hover{transform:scale(1.02);box-shadow:0 4px 12px rgba(191,155,48,.35)}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{background:#0077ed;transform:scale(1.02)}
+.btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--rule)}
+.btn-ghost:hover{background:rgba(0,0,0,.04)}
+.btn-x{background:transparent;color:var(--ink4);border:none;padding:6px 10px}
+.btn-x:hover{color:var(--red)}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-lg{padding:14px 32px;font-size:15px}
+
+.card{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.card-md{border-radius:14px}
+.card-sm{border-radius:10px}
+
+.hero{padding:96px 48px 56px;max-width:1100px;margin:0 auto}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-l);margin-bottom:18px}
+.h1{font-size:clamp(40px,5.5vw,68px);font-weight:700;letter-spacing:-.045em;line-height:1.02;color:var(--ink);margin-bottom:18px}
+.h1 em{font-style:normal;background:linear-gradient(135deg,#1d1d1f 0%,#6e6e73 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lede{font-size:19px;font-weight:300;color:var(--ink3);line-height:1.5;max-width:540px;letter-spacing:-.01em}
+
+.cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1100px;margin:0 auto;padding:0 48px 32px}
+.type-card{background:var(--surface);border-radius:20px;padding:32px 28px;cursor:pointer;box-shadow:var(--shadow);transition:all .4s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;border:1.5px solid transparent}
+.type-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,0,0,.04),transparent 50%);opacity:0;transition:opacity .4s}
+.type-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.type-card:hover::after{opacity:1}
+.tc-dot{width:12px;height:12px;border-radius:50%;margin-bottom:18px;box-shadow:0 0 0 4px rgba(255,255,255,.5)}
+.tc-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px}
+.tc-name{font-size:22px;font-weight:700;letter-spacing:-.025em;margin-bottom:8px}
+.tc-pct{font-size:32px;font-weight:700;letter-spacing:-.04em;margin-top:18px}
+.tc-desc{font-size:13px;color:var(--ink3);line-height:1.5;font-weight:400}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1100px;margin:0 auto;padding:0 48px 32px}
+.stat{background:var(--surface);border-radius:14px;padding:22px 26px;box-shadow:var(--shadow)}
+.stat-v{font-size:36px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.stat-l{font-size:12px;color:var(--ink3);margin-top:6px}
+
+.section-label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--rule2)}
+
+.recent{max-width:1100px;margin:0 auto;padding:0 48px 80px}
+.rep-card{background:var(--surface);border-radius:14px;padding:18px 22px;margin-bottom:10px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);transition:all .25s cubic-bezier(.22,1,.36,1)}
+.rep-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.rep-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.rep-info{flex:1}
+.rep-name{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.rep-meta{font-size:12px;color:var(--ink3);margin-top:3px;font-weight:400}
+.rep-actions{display:flex;align-items:center;gap:10px}
+.rep-amount{font-size:19px;font-weight:700;letter-spacing:-.03em}
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:980px;font-size:11px;font-weight:600;letter-spacing:-.005em}
+.badge-g{background:rgba(29,122,74,.1);color:var(--green)}
+.badge-a{background:rgba(138,90,0,.1);color:var(--amber)}
+.badge-r{background:rgba(192,57,43,.1);color:var(--red)}
+.badge-dot{width:6px;height:6px;border-radius:50%}
+
+.alert{padding:14px 18px;border-radius:12px;font-size:13px}
+.alert-gold{background:linear-gradient(135deg,rgba(191,155,48,.08),rgba(191,155,48,.04));color:var(--gold);border:1px solid rgba(191,155,48,.2)}
+.alert-blue{background:rgba(0,113,227,.08);color:var(--blue);border:1px solid rgba(0,113,227,.18)}
+.alert-red{background:rgba(192,57,43,.08);color:var(--red);border:1px solid rgba(192,57,43,.18)}
+
+.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn .2s ease}
+.modal{background:var(--surface);border-radius:22px;padding:40px;width:560px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:scaleIn .35s cubic-bezier(.22,1,.36,1)}
+.modal-h2{font-size:24px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--ink3);font-weight:400}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 24px}
+.form-grid .s2{grid-column:span 2}
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3)}
+.input,.field input,.field select,.field textarea{background:rgba(0,0,0,.04);border:1.5px solid transparent;border-radius:11px;padding:11px 14px;font-size:14px;color:var(--ink);outline:none;transition:all .2s;direction:rtl;width:100%;font-family:var(--font)}
+.input:focus,.field input:focus,.field select:focus,.field textarea:focus{background:#fff;border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,113,227,.12)}
+.field input[readonly]{background:linear-gradient(135deg,rgba(191,155,48,.1),rgba(191,155,48,.05));color:var(--gold);font-weight:600;cursor:default}
+.field input[readonly]:focus{border-color:transparent;box-shadow:none}
+.field textarea{resize:vertical;min-height:84px;line-height:1.6}
+.field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center;padding-left:30px}
+
+.lookup-box{background:linear-gradient(135deg,#fff 0%,#fafaf8 100%);border:1.5px solid rgba(0,113,227,.15);border-radius:14px;padding:18px;margin-bottom:24px}
+.lookup-row{display:flex;gap:10px;align-items:flex-end}
+.lookup-row .field{flex:1}
+.lookup-state{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px}
+.spinner{width:14px;height:14px;border:2px solid rgba(0,113,227,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+
+.editor{height:calc(100vh - 54px);display:grid;grid-template-columns:1fr 1fr;overflow:hidden;background:var(--bg)}
+.editor-left{overflow-y:auto;padding:28px 32px;border-left:1px solid rgba(0,0,0,.06);background:var(--surface)}
+.editor-right{overflow-y:auto;display:flex;flex-direction:column;background:var(--bg)}
+
+.editor-topbar{position:sticky;top:0;z-index:100;background:rgba(245,245,247,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:0 24px;height:54px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+
+.ticker{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule2)}
+.tick{background:var(--surface);padding:16px 20px}
+.tick-v{font-size:18px;font-weight:700;letter-spacing:-.03em;display:flex;align-items:baseline;gap:4px}
+.tick-v small{font-size:12px;color:var(--ink3);font-weight:500}
+.tick-l{font-size:10px;font-weight:500;color:var(--ink3);margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
+
+.gauge{padding:18px 22px;background:var(--surface);border-bottom:1px solid var(--rule2)}
+.gauge-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.gauge-track{height:5px;background:rgba(0,0,0,.06);border-radius:3px;position:relative;overflow:visible}
+.gauge-fill{height:100%;border-radius:3px;transition:all .6s cubic-bezier(.22,1,.36,1)}
+.gauge-mark{position:absolute;top:-7px;width:1.5px;height:19px;background:rgba(0,0,0,.15)}
+.gauge-ticks{display:flex;justify-content:space-between;margin-top:6px}
+
+.tabs{display:flex;padding:0 20px;border-bottom:1px solid var(--rule2);background:var(--surface);flex-shrink:0;gap:4px;padding-top:8px}
+.tab{padding:10px 18px;border:none;background:transparent;font-size:13px;font-weight:500;color:var(--ink3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;border-radius:8px 8px 0 0;font-family:var(--font);letter-spacing:-.01em}
+.tab.on{color:var(--ink);border-bottom-color:var(--ink)}
+.tab:hover:not(.on){background:rgba(0,0,0,.04);color:var(--ink2)}
+
+.zpills{display:flex;flex-wrap:wrap;gap:6px}
+.zpill{padding:6px 14px;border-radius:980px;font-size:12px;font-weight:500;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink3);cursor:pointer;transition:all .2s;letter-spacing:-.01em}
+.zpill:hover{border-color:var(--ink);color:var(--ink);transform:scale(1.02)}
+.zpill.on{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.zpill.hit{background:linear-gradient(135deg,rgba(192,57,43,.1),rgba(192,57,43,.05));border-color:rgba(192,57,43,.3);color:var(--red)}
+
+.parts{border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+.part{display:flex;align-items:center;gap:12px;padding:13px 18px;background:transparent;border-bottom:1px solid var(--rule2);cursor:pointer;transition:all .15s}
+.part:last-child{border-bottom:none}
+.part:hover{background:rgba(0,0,0,.02)}
+.part.on{background:rgba(29,122,74,.04)}
+.pchk{width:20px;height:20px;border-radius:50%;border:2px solid var(--ink5);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.pchk.on{border-color:var(--ink);background:var(--ink)}
+.pchk.on::after{content:'';width:6px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+.pname{flex:1;font-size:13.5px;color:var(--ink2)}
+.part.on .pname{color:var(--ink);font-weight:500}
+.pprice{font-size:12.5px;color:var(--ink3);font-feature-settings:'tnum';font-variant-numeric:tabular-nums}
+
+.sec{margin-bottom:32px}
+.sec-t{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.sec-t::after{content:'';flex:1;height:1px;background:var(--rule2)}
+
+.sel-card{background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow)}
+.sel-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sel-name{font-size:13.5px;font-weight:600}
+.sel-zone{font-size:11px;color:var(--ink3);background:rgba(0,0,0,.05);padding:3px 9px;border-radius:980px;margin-right:8px}
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mg-f{display:flex;flex-direction:column;gap:5px}
+.mg-f label{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4)}
+.mg-f input,.mg-f select{background:rgba(0,0,0,.04);border:none;border-radius:8px;padding:7px 10px;font-size:12px;outline:none;font-family:var(--font);color:var(--ink)}
+.mg-f input:focus,.mg-f select:focus{background:#fff;box-shadow:0 0 0 2px rgba(0,113,227,.2)}
+
+.type-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.tmc{padding:14px 12px;border-radius:12px;cursor:pointer;border:1.5px solid var(--rule2);background:var(--surface);transition:all .2s;text-align:right}
+.tmc:hover{border-color:var(--ink2);transform:scale(1.02)}
+.tmc.on{border-color:var(--ink);background:var(--ink)}
+.tmc.on .tmc-n{color:#fff}
+.tmc.on .tmc-d{color:rgba(255,255,255,.55)}
+.tmc-dot{width:8px;height:8px;border-radius:50%;margin-bottom:8px}
+.tmc-n{font-size:13px;font-weight:600;letter-spacing:-.01em}
+.tmc-d{font-size:10px;color:var(--ink3);margin-top:3px;line-height:1.4}
+
+.empty{text-align:center;padding:80px 24px}
+.empty-icon{font-size:48px;opacity:.15;margin-bottom:16px}
+.empty-h{font-size:15px;font-weight:600;margin-bottom:6px}
+.empty-d{font-size:13px;color:var(--ink3);line-height:1.6}
+</style>
 </head>
 <body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script type="text/babel">
+const{useState,useEffect,useCallback,useRef}=React;
 
-<div class="card">
-    <h2>iShamay PRO</h2>
-    <input type="number" id="pIn" placeholder="הכנס מספר רכב">
-    <button id="btn">חיפוש נתונים</button>
-    <div id="ld" class="loader">מתחבר למאגר הממשלתי...</div>
+/* ── STORAGE ── */
+const S={get:k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}},del:k=>{try{localStorage.removeItem(k)}catch{}}};
+const saveProfile=p=>S.set('sh_p',p);
+const loadProfile=()=>S.get('sh_p');
+const saveReport=r=>{S.set('sh_r_'+r.id,r);const ids=S.get('sh_ids')||[];if(!ids.includes(r.id)){ids.unshift(r.id);S.set('sh_ids',ids)}};
+const loadReports=()=>(S.get('sh_ids')||[]).map(id=>S.get('sh_r_'+id)).filter(Boolean);
+const delReport=id=>{S.del('sh_r_'+id);S.set('sh_ids',(S.get('sh_ids')||[]).filter(x=>x!==id))};
 
-    <div id="res" class="result-box">
-        <div class="row"><span>יצרן:</span> <span id="rMake" class="val"></span></div>
-        <div class="row"><span>דגם:</span> <span id="rModel" class="val"></span></div>
-        <div class="row"><span>שנת ייצור:</span> <span id="rYear" class="val"></span></div>
-        <div class="row"><span>מספר שלדה:</span> <span id="rVin" class="val"></span></div>
-        <button onclick="window.print()" style="background:#34c759; margin-top:10px;">הדפסת דו"ח</button>
-    </div>
-</div>
+/* ── CONSTANTS ── */
+const VAT=0.17,LR=180;
+const TYPES=[
+  {id:'repair',n:'לתיקון',c:'#1d7a4a',bdg:'badge-g',rng:'< 50%',d:'נזק מתחת ל-50%'},
+  {id:'defacto',n:'אובדן להלכה',c:'#8a5a00',bdg:'badge-a',rng:'50–60%',d:'נרשם ברישיון, ניתן לתקן'},
+  {id:'total',n:'אובדן כללי',c:'#c0392b',bdg:'badge-r',rng:'60%+',d:'טוטאל לוס, רישיון מבוטל'},
+];
+const ZONES=[
+  {id:'front',l:'חזית'},{id:'front_right',l:'חזית ימין'},{id:'front_left',l:'חזית שמאל'},
+  {id:'right',l:'צד ימין'},{id:'left',l:'צד שמאל'},{id:'rear',l:'אחור'},
+  {id:'rear_right',l:'אחור ימין'},{id:'rear_left',l:'אחור שמאל'},
+  {id:'roof',l:'גג'},{id:'engine',l:'תא מנוע'},{id:'underbody',l:'תחתית'},
+];
+const PDB={
+  front:[{n:'פגוש קדמי',p:2200},{n:'קורה פנימית פגוש',p:1600},{n:'מכסה מנוע',p:2800},{n:'גריל קדמי',p:700},{n:'פנס ראשי ימין',p:1400},{n:'פנס ראשי שמאל',p:1400},{n:'ספוילר תחתון',p:900},{n:'לוחית רישוי קד׳',p:160},{n:'מצנן מים',p:1900},{n:'קונדנסור מזגן',p:1500},{n:'מאורר מנוע',p:650},{n:'ביטנת כנף ימין',p:420},{n:'ביטנת כנף שמאל',p:420},{n:'סמל קדמי',p:280}],
+  front_right:[{n:'כנף קדמית ימין',p:2000},{n:'פנס ראשי ימין',p:1400},{n:'פגוש קד׳ ימין',p:900},{n:'מגן גלגל קד׳ ימין',p:320},{n:'ביטנת כנף ימין',p:420}],
+  front_left:[{n:'כנף קדמית שמאל',p:2000},{n:'פנס ראשי שמאל',p:1400},{n:'פגוש קד׳ שמאל',p:900},{n:'מגן גלגל קד׳ שמאל',p:320},{n:'ביטנת כנף שמאל',p:420}],
+  right:[{n:'דלת קדמית ימין',p:3800},{n:'דלת אחורית ימין',p:3500},{n:'סף ימין',p:1300},{n:'פח דופן ימין',p:2200},{n:'ידית דלת קד׳ ימין',p:280},{n:'ידית דלת אח׳ ימין',p:280},{n:'מראה חיצונית ימין',p:600},{n:'זגוגית דלת קד׳ ימין',p:900}],
+  left:[{n:'דלת קדמית שמאל',p:3800},{n:'דלת אחורית שמאל',p:3500},{n:'סף שמאל',p:1300},{n:'פח דופן שמאל',p:2200},{n:'ידית דלת קד׳ שמאל',p:280},{n:'ידית דלת אח׳ שמאל',p:280},{n:'מראה חיצונית שמאל',p:600},{n:'זגוגית דלת קד׳ שמאל',p:900}],
+  rear:[{n:'פגוש אחורי',p:2000},{n:'פנס אחורי ימין',p:1000},{n:'פנס אחורי שמאל',p:1000},{n:'מכסה תא מטען',p:2200},{n:'פח אחורי',p:1600},{n:'ספוילר אחורי',p:750},{n:'לוחית רישוי אח׳',p:160},{n:'מצלמת רוחזר',p:600},{n:'בית פנס אח׳ ימין',p:450},{n:'בית פנס אח׳ שמאל',p:450}],
+  rear_right:[{n:'כנף אחורית ימין',p:2500},{n:'פנס אחורי ימין',p:1000},{n:'בית גלגל אח׳ ימין',p:650},{n:'דלת אחורית ימין',p:3500}],
+  rear_left:[{n:'כנף אחורית שמאל',p:2500},{n:'פנס אחורי שמאל',p:1000},{n:'בית גלגל אח׳ שמאל',p:650},{n:'דלת אחורית שמאל',p:3500}],
+  roof:[{n:'גג',p:5000},{n:'ספוילר גג',p:900},{n:'מסגרת שמשה קד׳',p:700},{n:'מסגרת שמשה אח׳',p:700},{n:'ריפוד תקרה',p:1200}],
+  engine:[{n:'מנוע',p:18000},{n:'תיבת הילוכים',p:9000},{n:'מצבר',p:550},{n:'אלטרנטור',p:1400},{n:'משאבת מים',p:700},{n:'רצועות הנעה',p:350}],
+  underbody:[{n:'קורות תחתית',p:3500},{n:'מיכל דלק',p:2200},{n:'צינורות בלמים',p:800},{n:'מערכת הגה',p:4000},{n:'ציר קדמי',p:2500},{n:'ציר אחורי',p:2000}],
+};
+const LTYPES=[{id:'bodywork',l:'פחחות'},{id:'paint',l:'צביעה'},{id:'mechanical',l:'מכונאות'},{id:'electrical',l:'חשמל'},{id:'ac',l:'מזגן'},{id:'disassembly',l:'פירוק והרכבה'},{id:'alignment',l:'כיוון גלגלים'},{id:'frame',l:'מתיחת מרכב'},{id:'regulation',l:'תקנה 309'},{id:'other',l:'אחר'}];
 
-<script>
-    // פונקציית הקבלה של הנתונים
-    function handleResponse(data) {
-        document.getElementById('ld').style.display = 'none';
-        if (data.success && data.result.records.length > 0) {
-            const v = data.result.records[0];
-            document.getElementById('rMake').innerText = v.tozeret_nm;
-            document.getElementById('rModel').innerText = v.kinuy_mishkari || "כללי";
-            document.getElementById('rYear').innerText = v.shnat_yitzur;
-            document.getElementById('rVin').innerText = v.mispar_shila;
-            document.getElementById('res').style.display = 'block';
-        } else {
-            alert("הרכב לא נמצא. וודא שהמספר תקין.");
+/* ── HELPERS ── */
+const fmt=(n,d=0)=>Number(n||0).toLocaleString('he-IL',{maximumFractionDigits:d});
+const toDay=()=>new Date().toLocaleDateString('he-IL');
+const isoToday=()=>new Date().toISOString().slice(0,10);
+const newCase=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Math.floor(Math.random()*9000+1000)};
+const emptyF=()=>({caseNumber:'',reportType:'repair',ownerName:'',licenseNum:'',carMake:'',carModel:'',carYear:'',vin:'',km:'',owners:'1',insurance:'',policyNum:'',claimNum:'',incidentDate:'',inspectionDate:'',garage:'',damageType:'תאונה',incidentDesc:'',description:'',notes:'',baseValue:'',kmAdj:'0',ownersAdj:'0',extras:'0',vehicleValue:'',paintCost:'',otherCost:'',salvageValue:''});
+
+/* ══════════════════════════════════════════════════════════════
+   VEHICLE LOOKUP — data.gov.il + fallbacks
+   Multiple datasets to cover edge cases
+══════════════════════════════════════════════════════════════ */
+const VEHICLE_DATASETS = [
+  // Private & commercial vehicles (most common — currently active)
+  '053cea08-09bc-40ec-8f7a-156f0677aff3',
+  // Off-road (rare)
+  '03adc637-b6fe-402b-9937-7c3d3afc9140',
+  // Vehicles taken off road (older / scrapped)
+  '6f6acd03-f351-4a8f-8ecf-df792f4f573a',
+  // Motorcycles
+  'cd3acc5a-b210-4af2-8a0e-3b40a3d8501c',
+];
+
+const CORS_PROXIES = [
+  // Try direct first, then fall back to proxies
+  '',
+  'https://corsproxy.io/?url=',
+  'https://api.allorigins.win/raw?url=',
+];
+
+async function lookupVehicle(plateRaw) {
+  if (!plateRaw) return null;
+  // Clean plate: digits only
+  const plate = String(plateRaw).replace(/[^0-9]/g, '');
+  if (plate.length < 5) return { error: 'מספר רישוי לא תקין (פחות מ-5 ספרות)' };
+
+  for (const datasetId of VEHICLE_DATASETS) {
+    const apiUrl = `https://data.gov.il/api/3/action/datastore_search?resource_id=${datasetId}&q=${plate}&limit=5`;
+
+    for (const proxy of CORS_PROXIES) {
+      try {
+        const url = proxy ? proxy + encodeURIComponent(apiUrl) : apiUrl;
+        const response = await fetch(url, { signal: AbortSignal.timeout(7000) });
+        if (!response.ok) continue;
+        const data = await response.json();
+        if (data?.result?.records?.length > 0) {
+          // Find exact match if possible
+          const records = data.result.records;
+          let match = records.find(r => String(r.mispar_rechev || '') === plate);
+          if (!match) match = records[0];
+          return { data: match, datasetId };
         }
+      } catch (e) {
+        // try next proxy
+        continue;
+      }
     }
+  }
 
-    document.getElementById('btn').onclick = () => {
-        const plate = document.getElementById('pIn').value.trim();
-        if (plate.length < 5) return;
+  return { error: 'הרכב לא נמצא במאגר' };
+}
 
-        document.getElementById('ld').style.display = 'block';
-        document.getElementById('res').style.display = 'none';
+function parseVehicleRecord(r) {
+  if (!r) return {};
+  return {
+    licenseNum: r.mispar_rechev || '',
+    carMake: r.tozeret_nm || r.tozeret_cd_nm || '',
+    carModel: r.kinuy_mishari || r.degem_nm || r.kinuy_mishari_nm || '',
+    carYear: String(r.shnat_yitzur || ''),
+    vin: r.misgeret || '',
+    color: r.tzeva_rechev || '',
+    fuelType: r.sug_delek_nm || '',
+    engineModel: r.tozeret_nm || '',
+    licenseExpiry: r.tokef_dt || '',
+    ownership: r.baalut || '',
+  };
+}
 
-        const old = document.getElementById('api');
-        if (old) old.remove();
+/* ── GAUGE ── */
+function Gauge({pct}){
+  const p=Math.max(0,Number(pct)||0);
+  const c=p>=60?'#c0392b':p>=50?'#8a5a00':p>0?'#1d7a4a':'#aeaeb2';
+  const l=p>=60?'אובדן כללי':p>=50?'אובדן להלכה':p>0?'לתיקון':'—';
+  return(
+    <div className="gauge">
+      <div className="gauge-row">
+        <span style={{fontSize:11,fontWeight:600,color:'var(--ink3)',letterSpacing:'.06em',textTransform:'uppercase'}}>אחוז נזק גולמי</span>
+        <span style={{fontSize:14,fontWeight:600,color:c,letterSpacing:'-.01em'}}>{p>0?p.toFixed(1)+'% · ':''}{l}</span>
+      </div>
+      <div className="gauge-track">
+        <div className="gauge-fill" style={{width:Math.min(p,100)+'%',background:`linear-gradient(90deg, ${c}99, ${c})`}}/>
+        <div className="gauge-mark" style={{right:'50%'}}/>
+        <div className="gauge-mark" style={{right:'60%'}}/>
+      </div>
+      <div className="gauge-ticks">
+        {['0','50','60','100'].map(m=><span key={m} style={{fontSize:9,color:'var(--ink4)',fontWeight:500}}>{m}%</span>)}
+      </div>
+    </div>
+  );
+}
 
-        const s = document.createElement('script');
-        s.id = 'api';
-        
-        // ה-ID החדש והמעודכן (Resource ID) שאמור לעבוד עכשיו:
-        const RID = "c8b9f9c8-4612-4068-934f-d4291121c68c"; 
-        s.src = `https://data.gov.il/api/3/action/datastore_search?resource_id=${RID}&q=${plate}&callback=handleResponse`;
-        
-        document.body.appendChild(s);
-    };
+function TBadge({type}){
+  const t=TYPES.find(x=>x.id===type);
+  if(!t)return null;
+  return <span className={'badge '+t.bdg}><span className="badge-dot" style={{background:t.c}}/>{t.n}</span>;
+}
+
+/* ── CAR SVG ── */
+function CarSVG({active,onZone,damaged}){
+  const Z=[
+    {id:'front',pts:'190,22 270,22 294,74 166,74',lx:230,ly:48},
+    {id:'front_right',pts:'270,22 314,44 314,104 294,74',lx:300,ly:68},
+    {id:'front_left',pts:'190,22 146,44 146,104 166,74',lx:160,ly:68},
+    {id:'right',pts:'314,104 334,128 334,240 314,264',lx:327,ly:184},
+    {id:'left',pts:'146,104 126,128 126,240 146,264',lx:133,ly:184},
+    {id:'rear',pts:'166,282 294,282 294,314 166,314',lx:230,ly:298},
+    {id:'rear_right',pts:'294,282 314,264 314,304 294,314',lx:307,ly:291},
+    {id:'rear_left',pts:'166,282 146,264 146,304 166,314',lx:153,ly:291},
+    {id:'roof',pts:'166,74 294,74 294,282 166,282',lx:230,ly:178},
+  ];
+  return(
+    <div style={{textAlign:'center',flexShrink:0}}>
+      <svg viewBox="116 12 240 316" width="186" height="246" style={{overflow:'visible',filter:'drop-shadow(0 6px 16px rgba(0,0,0,.08))'}}>
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#fafafc"/><stop offset="100%" stopColor="#e8e8ec"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="230" cy="174" rx="104" ry="146" fill="url(#bg)" stroke="rgba(0,0,0,.08)" strokeWidth="1"/>
+        {Z.map(z=>{
+          const isA=active===z.id,isH=damaged.includes(z.id);
+          return(
+            <g key={z.id} onClick={()=>onZone(z.id)} style={{cursor:'pointer'}}>
+              <polygon points={z.pts}
+                fill={isA?'rgba(0,0,0,.15)':isH?'rgba(192,57,43,.14)':'rgba(255,255,255,.4)'}
+                stroke={isA?'rgba(0,0,0,.5)':isH?'rgba(192,57,43,.55)':'rgba(0,0,0,.1)'}
+                strokeWidth={isA?1.8:0.8} style={{transition:'all .25s'}}/>
+              <text x={z.lx} y={z.ly} textAnchor="middle" dominantBaseline="middle"
+                fill={isA?'rgba(0,0,0,.75)':isH?'rgba(192,57,43,.85)':'rgba(0,0,0,.3)'}
+                fontSize="7" fontFamily="Heebo,sans-serif" fontWeight={isA?700:500} pointerEvents="none">
+                {ZONES.find(zz=>zz.id===z.id)?.l}
+              </text>
+            </g>
+          );
+        })}
+        <polygon points="180,78 280,78 276,128 184,128" fill="rgba(170,200,235,.35)" stroke="rgba(0,0,0,.06)" strokeWidth="0.5"/>
+        <polygon points="180,228 280,228 276,278 184,278" fill="rgba(170,200,235,.35)" stroke="rgba(0,0,0,.06)" strokeWidth="0.5"/>
+        {[[151,120],[151,234],[309,120],[309,234]].map(([x,y],i)=>(
+          <g key={i}>
+            <ellipse cx={x} cy={y} rx={12} ry={16} fill="#c8c8cc" stroke="rgba(0,0,0,.15)" strokeWidth="1"/>
+            <ellipse cx={x} cy={y} rx={6} ry={8} fill="#dcdce0" stroke="rgba(0,0,0,.1)" strokeWidth=".6"/>
+          </g>
+        ))}
+        <ellipse cx="176" cy="33" rx="11" ry="6" fill="rgba(255,245,200,.6)" stroke="rgba(0,0,0,.08)" strokeWidth="0.5"/>
+        <ellipse cx="284" cy="33" rx="11" ry="6" fill="rgba(255,245,200,.6)" stroke="rgba(0,0,0,.08)" strokeWidth="0.5"/>
+      </svg>
+      <p style={{fontSize:10,color:'var(--ink4)',marginTop:10,letterSpacing:'.06em',textTransform:'uppercase',fontWeight:500}}>לחץ על אזור הפגיעה</p>
+    </div>
+  );
+}
+
+/* ── FIELD ── */
+function F({label,value,onChange,type='text',options,readOnly,span,placeholder}){
+  return(
+    <div className="field" style={span?{gridColumn:'span '+span}:{}}>
+      <label>{label}</label>
+      {options
+        ?<select value={value} onChange={e=>onChange(e.target.value)}>
+            {options.map(o=><option key={o.v||o} value={o.v||o}>{o.l||o}</option>)}
+          </select>
+        :<input type={type} value={value} onChange={e=>onChange(e.target.value)} readOnly={readOnly} placeholder={placeholder||''}/>
+      }
+    </div>
+  );
+}
+
+/* ── PROFILE MODAL ── */
+function ProfileModal({profile,onSave,onClose}){
+  const[f,setF]=useState(profile||{name:'',license:'',address:'',phone:'',email:'',since:'',education:'',certifications:''});
+  const set=(k,v)=>setF(p=>({...p,[k]:v}));
+  return(
+    <div className="modal-bg" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+      <div className="modal">
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:28}}>
+          <div>
+            <div className="modal-h2">פרטי השמאי</div>
+            <div className="modal-sub">יופיעו בכותרת ובחתימה של כל שומה שתיצור</div>
+          </div>
+          <button onClick={onClose} style={{background:'rgba(0,0,0,.06)',border:'none',width:32,height:32,borderRadius:'50%',cursor:'pointer',fontSize:14,color:'var(--ink3)',display:'flex',alignItems:'center',justifyContent:'center'}}>✕</button>
+        </div>
+        <div className="form-grid">
+          {[['name','שם מלא השמאי',2],['license','מספר רישיון'],['address','כתובת המשרד',2],['phone','טלפון'],['email','דוא"ל'],['since','שמאי מאז שנת'],['education','השכלה',2]].map(([k,l,s])=>(
+            <F key={k} label={l} value={f[k]||''} onChange={v=>set(k,v)} span={s}/>
+          ))}
+          <div className="field s2"><label>הסמכות ותעודות</label><textarea value={f.certifications||''} onChange={e=>set('certifications',e.target.value)} rows={3}/></div>
+        </div>
+        <div style={{display:'flex',gap:10,marginTop:26}}>
+          <button className="btn btn-g" onClick={()=>onSave(f)}>שמור פרטים</button>
+          <button className="btn btn-s" onClick={onClose}>ביטול</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── LICENSE LOOKUP COMPONENT ── */
+function LicenseLookup({onResult}){
+  const[plate,setPlate]=useState('');
+  const[state,setState]=useState('idle'); // idle | loading | success | error
+  const[msg,setMsg]=useState('');
+
+  async function doLookup(){
+    if(!plate.trim()){setState('error');setMsg('נא להזין מספר רישוי');return}
+    setState('loading');setMsg('מחפש במאגר משרד התחבורה...');
+    try{
+      const result=await lookupVehicle(plate);
+      if(result?.data){
+        const parsed=parseVehicleRecord(result.data);
+        onResult(parsed);
+        setState('success');
+        setMsg(`✓ נמצא: ${parsed.carMake} ${parsed.carModel} ${parsed.carYear}`);
+        setTimeout(()=>{setState('idle');setMsg('')},3500);
+      }else{
+        setState('error');
+        setMsg(result?.error||'הרכב לא נמצא במאגר. ניתן למלא ידנית.');
+      }
+    }catch(e){
+      setState('error');
+      setMsg('שגיאת תקשורת. ניתן למלא ידנית.');
+    }
+  }
+
+  return(
+    <div className="lookup-box">
+      <div style={{fontSize:11,fontWeight:600,letterSpacing:'.06em',textTransform:'uppercase',color:'var(--blue)',marginBottom:10,display:'flex',alignItems:'center',gap:6}}>
+        <span style={{display:'inline-block',width:6,height:6,background:'var(--blue)',borderRadius:'50%'}}/>
+        שליפת פרטי רכב אוטומטית · משרד התחבורה
+      </div>
+      <div className="lookup-row">
+        <div className="field" style={{flex:1}}>
+          <input value={plate} onChange={e=>setPlate(e.target.value)}
+            placeholder="הזן מספר רישוי (ספרות בלבד, ללא מקפים)"
+            onKeyDown={e=>e.key==='Enter'&&doLookup()}
+            disabled={state==='loading'}/>
+        </div>
+        <button className="btn btn-blue" onClick={doLookup} disabled={state==='loading'} style={{height:42}}>
+          {state==='loading'?'מחפש...':'שלוף פרטים'}
+        </button>
+      </div>
+      {state!=='idle'&&(
+        <div className="lookup-state" style={{color:state==='error'?'var(--red)':state==='success'?'var(--green)':'var(--ink3)'}}>
+          {state==='loading'&&<div className="spinner"/>}
+          <span>{msg}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── PRINT VIEW ── */
+function PrintView({R,P,onClose}){
+  const tp=(R.parts||[]).reduce((s,p)=>s+(Number(p.price)||0),0);
+  const tl=(R.laborItems||[]).reduce((s,l)=>s+(Number(l.hours)||0)*LR,0);
+  const paint=Number(R.paintCost||0),other=Number(R.otherCost||0);
+  const sub=tp+tl+paint+other,vat=sub*VAT,total=sub+vat;
+  const vv=Number(R.vehicleValue||0),pct=vv?(sub/vv*100):0;
+  const verdict=pct>=60?'אובדן כללי':pct>=50?'אובדן להלכה':'לתיקון';
+  const vCol=pct>=60?'#c0392b':pct>=50?'#8a5a00':'#1d7a4a';
+  useEffect(()=>{setTimeout(()=>window.print(),500)},[]);
+  const td={padding:'7px 10px',border:'1px solid #e5e5ea',fontSize:11,fontFamily:'Heebo,sans-serif',verticalAlign:'top'};
+  return(
+    <div style={{position:'fixed',inset:0,background:'#fff',zIndex:9999,overflowY:'auto',fontFamily:'-apple-system,Heebo,sans-serif',direction:'rtl',color:'#1d1d1f'}}>
+      <style>{'@media print{.noprint{display:none!important}body{margin:0}}@page{margin:14mm 16mm}table{border-collapse:collapse;width:100%}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'}</style>
+      <div className="noprint" style={{padding:'12px 28px',background:'#1d1d1f',display:'flex',gap:10}}>
+        <button onClick={()=>window.print()} style={{background:'#bf9b30',color:'#fff',border:'none',padding:'9px 20px',cursor:'pointer',fontFamily:'-apple-system,Heebo',fontWeight:600,fontSize:13,borderRadius:980}}>🖨 הדפסה / שמירה כ-PDF</button>
+        <button onClick={onClose} style={{background:'rgba(255,255,255,.1)',border:'none',color:'#fff',padding:'9px 18px',cursor:'pointer',fontFamily:'-apple-system,Heebo',fontSize:13,borderRadius:980}}>✕ סגור</button>
+      </div>
+      <div style={{maxWidth:800,margin:'0 auto',padding:'30px 38px'}}>
+        <table style={{marginBottom:20}}>
+          <tbody><tr>
+            <td style={{...td,border:'none',borderLeft:'2px solid #1d1d1f',paddingLeft:18,width:'30%',paddingBottom:0}}>
+              <div style={{fontSize:8,letterSpacing:2,color:'#999',textTransform:'uppercase',marginBottom:4}}>מוגש לכבוד</div>
+              <div style={{fontSize:14,fontWeight:700}}>{R.insurance||'—'}</div>
+              {R.policyNum&&<div style={{fontSize:11,color:'#666',marginTop:2}}>פוליסה: {R.policyNum}</div>}
+              {R.claimNum&&<div style={{fontSize:11,color:'#666'}}>תביעה: {R.claimNum}</div>}
+            </td>
+            <td style={{...td,border:'none',textAlign:'center',verticalAlign:'middle',padding:'0 16px'}}>
+              <div style={{fontSize:20,fontWeight:700,letterSpacing:'-.03em',borderBottom:'1.5px solid #1d1d1f',paddingBottom:6,marginBottom:4}}>{P?.name||'שמאי רכב'}</div>
+              <div style={{fontSize:10,color:'#666'}}>{P?.address}</div>
+              <div style={{fontSize:10,color:'#666'}}>טל׳ {P?.phone} | {P?.email}</div>
+              <div style={{fontSize:9,color:'#999',marginTop:2}}>רישיון מס׳ {P?.license}</div>
+            </td>
+            <td style={{...td,border:'none',borderRight:'2px solid #1d1d1f',paddingRight:18,textAlign:'left',width:'26%',paddingBottom:0}}>
+              <div style={{fontSize:8,letterSpacing:2,color:'#999',textTransform:'uppercase',marginBottom:4}}>פרטי תיק</div>
+              <div style={{fontSize:14,fontWeight:700}}>מס׳ {R.caseNumber}</div>
+              <div style={{fontSize:11,color:'#666',marginTop:2}}>{toDay()}</div>
+              <div style={{marginTop:8}}><span style={{padding:'3px 10px',fontSize:9,fontWeight:600,textTransform:'uppercase',background:vCol+'15',color:vCol,borderRadius:980,border:'1px solid '+vCol+'30'}}>{verdict}</span></div>
+            </td>
+          </tr></tbody>
+        </table>
+        <div style={{textAlign:'center',borderTop:'1.5px solid #1d1d1f',borderBottom:'1.5px solid #1d1d1f',padding:'10px 0',margin:'16px 0'}}>
+          <h1 style={{fontSize:18,fontWeight:700,letterSpacing:'-.02em',margin:0}}>חוות דעת — שומת נזק רכב</h1>
+        </div>
+        <table style={{marginBottom:16}}>
+          <tbody>
+            {[['בעל הרכב',R.ownerName,'חברת ביטוח',R.insurance],['מספר רישוי',R.licenseNum,'מס׳ פוליסה',R.policyNum],['דגם הרכב',(R.carMake+' '+R.carModel+' '+R.carYear).trim(),'סוג נזק',R.damageType],['מספר שילדה',R.vin,'תאריך אירוע',R.incidentDate],['קילומטרים',R.km?Number(R.km).toLocaleString():'—','תאריך בדיקה',R.inspectionDate],['מס׳ בעלים',R.owners,'מוסך',R.garage]].map((row,i)=>(
+              <tr key={i}>
+                <td style={{...td,background:'#f5f5f7',fontWeight:600,width:'18%',fontSize:10,textTransform:'uppercase',letterSpacing:'.03em'}}>{row[0]}</td>
+                <td style={{...td,width:'32%'}}>{row[1]||'—'}</td>
+                <td style={{...td,background:'#f5f5f7',fontWeight:600,width:'18%',fontSize:10,textTransform:'uppercase',letterSpacing:'.03em'}}>{row[2]}</td>
+                <td style={{...td,width:'32%'}}>{row[3]||'—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {[['תיאור המקרה',R.incidentDesc],['תיאור הנזקים',R.description],['הערות מקצועיות',R.notes]].map(([t,v])=>v&&(
+          <div key={t} style={{marginBottom:14}}>
+            <div style={{fontWeight:700,fontSize:11,textTransform:'uppercase',letterSpacing:'.04em',color:'#6e6e73',borderBottom:'1px solid #e5e5ea',paddingBottom:4,marginBottom:8}}>{t}</div>
+            <p style={{fontSize:12,lineHeight:1.8,margin:0,whiteSpace:'pre-wrap',color:'#3a3a3c'}}>{v}</p>
+          </div>
+        ))}
+        <div style={{marginBottom:16}}>
+          <div style={{fontWeight:700,fontSize:11,textTransform:'uppercase',letterSpacing:'.04em',color:'#6e6e73',borderBottom:'1px solid #e5e5ea',paddingBottom:4,marginBottom:10}}>תחשיב ערך הרכב</div>
+          <table style={{width:'auto'}}>
+            <tbody>
+              <tr><td style={{...td,minWidth:200}}>ערך רכב בסיסי לפי מחירון</td><td style={{...td,textAlign:'left',fontWeight:600}}>{fmt(R.baseValue)} ₪</td></tr>
+              {Number(R.kmAdj)!==0&&<tr><td style={td}>תוספת/הפחתה קילומטרים</td><td style={{...td,textAlign:'left'}}>{fmt(R.kmAdj)} ₪</td></tr>}
+              {Number(R.ownersAdj)!==0&&<tr><td style={td}>תוספת/הפחתה בעלויות</td><td style={{...td,textAlign:'left'}}>{fmt(R.ownersAdj)} ₪</td></tr>}
+              {Number(R.extras)>0&&<tr><td style={td}>תוספות ואביזרים</td><td style={{...td,textAlign:'left'}}>{fmt(R.extras)} ₪</td></tr>}
+              <tr style={{background:'#f5f5f7'}}><td style={{...td,fontWeight:700}}>ערך רכב משוערך (כולל מע"מ)</td><td style={{...td,textAlign:'left',fontWeight:700,fontSize:13}}>{fmt(vv)} ₪</td></tr>
+              {R.salvageValue&&<tr><td style={td}>ערך שרידים</td><td style={{...td,textAlign:'left',color:vCol}}>{fmt(R.salvageValue)} ₪</td></tr>}
+            </tbody>
+          </table>
+        </div>
+        <div style={{marginBottom:16}}>
+          <div style={{fontWeight:700,fontSize:11,textTransform:'uppercase',letterSpacing:'.04em',color:'#6e6e73',borderBottom:'1px solid #e5e5ea',paddingBottom:4,marginBottom:10}}>אומדן הנזק</div>
+          <table>
+            <thead><tr style={{background:'#1d1d1f',color:'#fff'}}>
+              {['תיאור','מוקד','פעולה','מקוריות','בלאי','עלות ₪'].map(h=>(
+                <th key={h} style={{...td,border:'1px solid #333',color:'#fff',fontWeight:500,textAlign:'center',fontSize:10,textTransform:'uppercase',letterSpacing:'.04em'}}>{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>
+              {(R.parts||[]).map((p,i)=>(
+                <tr key={i} style={{background:i%2===0?'#fbfbfd':'#fff'}}>
+                  <td style={{...td,textAlign:'right'}}>{p.name}</td>
+                  <td style={{...td,textAlign:'center'}}>{ZONES.find(z=>z.id===p.zone)?.l||''}</td>
+                  <td style={{...td,textAlign:'center'}}>{p.action}</td>
+                  <td style={{...td,textAlign:'center'}}>{p.origin}</td>
+                  <td style={{...td,textAlign:'center'}}>{p.wear||'—'}</td>
+                  <td style={{...td,textAlign:'center',fontWeight:600}}>{fmt(p.price)}</td>
+                </tr>
+              ))}
+              {(R.laborItems||[]).filter(l=>l.description).map((l,i)=>(
+                <tr key={'l'+i} style={{background:((R.parts||[]).length+i)%2===0?'#fbfbfd':'#fff'}}>
+                  <td style={{...td,textAlign:'right'}}>{l.description}</td>
+                  <td style={{...td,textAlign:'center'}}>{LTYPES.find(t=>t.id===l.type)?.l||''}</td>
+                  <td style={{...td,textAlign:'center'}}>עבודה</td>
+                  <td style={{...td,textAlign:'center'}}>—</td>
+                  <td style={{...td,textAlign:'center'}}>{l.hours} ש"ע</td>
+                  <td style={{...td,textAlign:'center',fontWeight:600}}>{fmt((Number(l.hours)||0)*LR)}</td>
+                </tr>
+              ))}
+              {paint>0&&<tr style={{background:'#fdfcf5'}}><td colSpan="5" style={td}>עבודות צביעה</td><td style={{...td,textAlign:'center',fontWeight:600}}>{fmt(paint)}</td></tr>}
+              {other>0&&<tr style={{background:'#fdfcf5'}}><td colSpan="5" style={td}>עלויות נוספות</td><td style={{...td,textAlign:'center',fontWeight:600}}>{fmt(other)}</td></tr>}
+            </tbody>
+          </table>
+        </div>
+        <div style={{display:'flex',gap:16,marginBottom:20,alignItems:'flex-start'}}>
+          <div style={{flex:1,border:'1.5px solid #1d1d1f',borderRadius:12,padding:'16px 18px'}}>
+            <div style={{fontWeight:700,fontSize:13,marginBottom:12}}>סיכום כספי</div>
+            {[['סה"כ חלקים',tp],['סה"כ עבודות',tl],paint&&['סה"כ צביעה',paint],other&&['עלויות נוספות',other]].filter(Boolean).map(([k,v],i)=>(
+              <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'5px 0',borderBottom:'1px solid #f0f0f2',fontSize:12}}>
+                <span style={{color:'#6e6e73'}}>{k}</span><span style={{fontWeight:500}}>{fmt(v)} ₪</span>
+              </div>
+            ))}
+            <div style={{display:'flex',justifyContent:'space-between',padding:'5px 0',borderBottom:'1px solid #f0f0f2',fontSize:12}}><span style={{color:'#6e6e73'}}>מע"מ 17%</span><span>{fmt(vat)} ₪</span></div>
+            <div style={{display:'flex',justifyContent:'space-between',marginTop:10,paddingTop:10,borderTop:'1.5px solid #1d1d1f',fontWeight:700,fontSize:16}}><span>סה"כ לתשלום</span><span>{fmt(total)} ₪</span></div>
+          </div>
+          <div style={{minWidth:148,border:'1.5px solid '+vCol,borderRadius:12,padding:'16px 18px',textAlign:'center',background:vCol+'06'}}>
+            <div style={{fontSize:9,letterSpacing:2,textTransform:'uppercase',color:'#999',marginBottom:8}}>קביעת השמאי</div>
+            <div style={{fontSize:34,fontWeight:700,letterSpacing:'-.04em',color:vCol}}>{pct.toFixed(1)}%</div>
+            <div style={{fontSize:11,color:'#999',marginBottom:6}}>מערך הרכב</div>
+            <div style={{fontSize:14,fontWeight:700,color:vCol}}>{verdict}</div>
+            {vv>0&&<div style={{fontSize:10,color:'#999',marginTop:4}}>ערך: {fmt(vv)} ₪</div>}
+            {R.reportType==='defacto'&&<div style={{fontSize:9,color:'#999',marginTop:6,lineHeight:1.5}}>ניתן לתקן<br/>נרשם ברישיון הרכב</div>}
+            {R.reportType==='total'&&<div style={{fontSize:9,color:vCol,marginTop:6,lineHeight:1.5}}>רישיון מבוטל<br/>טופס 587</div>}
+          </div>
+        </div>
+        <div style={{borderTop:'1px solid #e5e5ea',paddingTop:12,marginBottom:12}}>
+          <div style={{fontWeight:700,fontSize:11,textTransform:'uppercase',letterSpacing:'.04em',color:'#6e6e73',marginBottom:6}}>השכלת וניסיון השמאי</div>
+          <p style={{fontSize:11,lineHeight:1.8,color:'#424245',margin:0}}>{P?.education}{P?.since?' | שמאי מאז שנת '+P.since:''}{P?.certifications?' | '+P.certifications:''}</p>
+        </div>
+        <div style={{background:'#f5f5f7',borderRadius:10,padding:'12px 16px',fontSize:11,lineHeight:1.8,color:'#424245',marginBottom:20}}>
+          <div style={{fontWeight:700,color:'#1d1d1f',marginBottom:3}}>הצהרה משפטית</div>
+          אני נותן חוות דעתי זו במקום עדות בבית המשפט, והריני מצהיר בזה כי ידוע לי היטב, שלעניין הוראות החוק הפלילי בדבר עדות שקר בשבועה בבית המשפט, דין חוות דעתי זו, כאשר היא חתומה על ידי, כדין עדות בבית המשפט.
+        </div>
+        <div style={{display:'flex',justifyContent:'space-between'}}>
+          <div style={{textAlign:'center'}}><div style={{width:176,borderBottom:'1px solid #1d1d1f',paddingBottom:28,marginBottom:6}}/><div style={{fontSize:12,fontWeight:600}}>{P?.name}</div><div style={{fontSize:10,color:'#999'}}>שמאי רכב | רישיון {P?.license}</div></div>
+          <div style={{textAlign:'center'}}><div style={{width:110,borderBottom:'1px solid #1d1d1f',paddingBottom:28,marginBottom:6}}/><div style={{fontSize:11,color:'#999'}}>תאריך</div></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MAIN APP
+══════════════════════════════════════════════════════════════ */
+function App(){
+  const[screen,setScreen]=useState('home');
+  const[profile,setProfile]=useState(null);
+  const[showProfile,setShowProfile]=useState(false);
+  const[reports,setReports]=useState([]);
+  const[printRep,setPrintRep]=useState(null);
+  const[form,setFormState]=useState(emptyF());
+  const[parts,setParts]=useState([]);
+  const[labor,setLabor]=useState([{description:'',type:'bodywork',hours:'2'}]);
+  const[zone,setZone]=useState('front');
+  const[tab,setTab]=useState('diagram');
+  const sf=useCallback((k,v)=>setFormState(p=>({...p,[k]:v})),[]);
+
+  useEffect(()=>{setProfile(loadProfile());setReports(loadReports())},[]);
+  useEffect(()=>{if(screen==='new'&&!form.caseNumber){sf('caseNumber',newCase());sf('inspectionDate',isoToday())}},[screen]);
+  useEffect(()=>{
+    const v=(Number(form.baseValue)||0)+(Number(form.kmAdj)||0)+(Number(form.ownersAdj)||0)+(Number(form.extras)||0);
+    if(form.baseValue)sf('vehicleValue',v.toString());
+  },[form.baseValue,form.kmAdj,form.ownersAdj,form.extras]);
+
+  const tp=parts.reduce((s,p)=>s+(Number(p.price)||0),0);
+  const tl=labor.reduce((s,l)=>s+(Number(l.hours)||0)*LR,0);
+  const paint=Number(form.paintCost||0),other=Number(form.otherCost||0);
+  const sub=tp+tl+paint+other,vat=sub*VAT,total=sub+vat;
+  const vv=Number(form.vehicleValue||0);
+  const pct=vv?(sub/vv*100):0;
+  const suggested=pct>=60?'total':pct>=50?'defacto':'repair';
+  const damaged=[...new Set(parts.map(p=>p.zone))];
+
+  const onVehicleLookup=(data)=>{
+    setFormState(prev=>({
+      ...prev,
+      licenseNum:data.licenseNum||prev.licenseNum,
+      carMake:data.carMake||prev.carMake,
+      carModel:data.carModel||prev.carModel,
+      carYear:data.carYear||prev.carYear,
+      vin:data.vin||prev.vin,
+    }));
+  };
+
+  const togglePart=(part,z)=>{
+    const idx=parts.findIndex(p=>p.name===part.n&&p.zone===z);
+    if(idx>=0)setParts(prev=>prev.filter((_,i)=>i!==idx));
+    else setParts(prev=>[...prev,{name:part.n,zone:z,price:part.p,action:"הח'",origin:'תחליפי',wear:''}]);
+  };
+  const updPart=(idx,k,v)=>setParts(prev=>prev.map((p,i)=>i===idx?{...p,[k]:v}:p));
+
+  const doSave=()=>{
+    if(!form.ownerName){alert('נא למלא שם בעל הרכב');return}
+    const r={id:Date.now().toString(),createdAt:Date.now(),...form,parts,laborItems:labor};
+    saveReport(r);setReports(loadReports());setScreen('home');
+    setFormState(emptyF());setParts([]);setLabor([{description:'',type:'bodywork',hours:'2'}]);
+  };
+  const goHome=()=>{setScreen('home');setFormState(emptyF());setParts([]);setLabor([{description:'',type:'bodywork',hours:'2'}])};
+
+  if(printRep)return<PrintView R={printRep} P={profile} onClose={()=>setPrintRep(null)}/>;
+
+  /* ─ HOME ─ */
+  if(screen==='home')return(
+    <div>
+      <nav className="nav">
+        <div className="brand">שמאות רכב<span className="brand-dot"/></div>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setShowProfile(true)}>פרטי שמאי</button>
+          <button className="btn btn-s btn-sm" onClick={()=>setScreen('list')}>ארכיון · {reports.length}</button>
+          <button className="btn btn-p btn-sm" onClick={()=>setScreen('new')}>+ שומה חדשה</button>
+        </div>
+      </nav>
+
+      <div className="hero fu">
+        <div className="eyebrow">מערכת חוות דעת מקצועית</div>
+        <h1 className="h1">שומת נזק<br/><em>רכב, מחושבת אוטומטית.</em></h1>
+        <p className="lede">יצירת חוות דעת לתיקון, אובדן להלכה ואובדן כללי. שליפת פרטי רכב ממשרד התחבורה, חישוב אוטומטי, הדפסה מקצועית.</p>
+      </div>
+
+      <div className="cards-3">
+        {TYPES.map((t,i)=>(
+          <div key={t.id} className={'type-card fu fu-'+(i+1)} onClick={()=>{setScreen('new');setTimeout(()=>sf('reportType',t.id),60)}}>
+            <div className="tc-dot" style={{background:t.c}}/>
+            <div className="tc-eyebrow">{t.rng}</div>
+            <div className="tc-name">{t.n}</div>
+            <div className="tc-desc">{t.d}</div>
+            <div className="tc-pct" style={{color:t.c}}>{t.rng}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="stats fu fu-4">
+        {[
+          ['שומות שנוצרו',reports.length],
+          ['אובדן להלכה',reports.filter(r=>r.reportType==='defacto').length],
+          ['אובדן כללי',reports.filter(r=>r.reportType==='total').length],
+        ].map(([l,v])=>(
+          <div key={l} className="stat">
+            <div className="stat-v">{v}</div>
+            <div className="stat-l">{l}</div>
+          </div>
+        ))}
+      </div>
+
+      {reports.length>0&&(
+        <div className="recent fu">
+          <div className="section-label">שומות אחרונות</div>
+          {reports.slice(0,8).map(r=>{
+            const rtp=(r.parts||[]).reduce((s,p)=>s+(Number(p.price)||0),0);
+            const rtl=(r.laborItems||[]).reduce((s,l)=>s+(Number(l.hours)||0)*LR,0);
+            const rtot=(rtp+rtl)*(1+VAT);
+            const type=TYPES.find(t=>t.id===r.reportType);
+            return(
+              <div key={r.id} className="rep-card">
+                <div className="rep-dot" style={{background:type?.c||'#aaa'}}/>
+                <div className="rep-info">
+                  <div className="rep-name">{r.ownerName}</div>
+                  <div className="rep-meta">{r.carMake} {r.carModel} {r.carYear} · {r.licenseNum} · {new Date(r.createdAt).toLocaleDateString('he-IL')}</div>
+                </div>
+                <div className="rep-actions">
+                  <div className="rep-amount">{fmt(rtot)} ₪</div>
+                  <TBadge type={r.reportType}/>
+                  <button className="btn btn-ghost btn-sm" onClick={()=>setPrintRep(r)}>הדפסה</button>
+                  <button className="btn btn-x btn-sm" onClick={()=>{if(window.confirm('למחוק?')){delReport(r.id);setReports(loadReports())}}}>✕</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {!profile&&(
+        <div style={{maxWidth:1100,margin:'0 auto',padding:'0 48px 48px'}}>
+          <div className="alert alert-gold">
+            <strong>⚠ טרם הגדרת פרטי שמאי</strong> — <span style={{textDecoration:'underline',cursor:'pointer',fontWeight:600}} onClick={()=>setShowProfile(true)}>הגדר עכשיו</span> כדי שיופיעו בכל חוות הדעת
+          </div>
+        </div>
+      )}
+      {showProfile&&<ProfileModal profile={profile} onSave={p=>{setProfile(p);saveProfile(p);setShowProfile(false)}} onClose={()=>setShowProfile(false)}/>}
+    </div>
+  );
+
+  /* ─ LIST ─ */
+  if(screen==='list')return(
+    <div>
+      <nav className="nav">
+        <div className="brand">ארכיון<span className="brand-dot"/></div>
+        <button className="btn btn-s btn-sm" onClick={()=>setScreen('home')}>← דף הבית</button>
+      </nav>
+      <div className="recent" style={{paddingTop:48}}>
+        <div className="section-label">כל השומות · {reports.length}</div>
+        {reports.length===0&&<div className="empty"><div className="empty-icon">○</div><div className="empty-h">אין שומות שמורות</div><div className="empty-d">צור שומה חדשה כדי להתחיל</div></div>}
+        {reports.map(r=>{
+          const rtp=(r.parts||[]).reduce((s,p)=>s+(Number(p.price)||0),0);
+          const rtl=(r.laborItems||[]).reduce((s,l)=>s+(Number(l.hours)||0)*LR,0);
+          const rtot=(rtp+rtl)*(1+VAT);
+          const type=TYPES.find(t=>t.id===r.reportType);
+          return(
+            <div key={r.id} className="rep-card">
+              <div className="rep-dot" style={{background:type?.c||'#aaa'}}/>
+              <div className="rep-info">
+                <div className="rep-name">{r.ownerName}</div>
+                <div className="rep-meta">{r.carMake} {r.carModel} · {r.licenseNum} · תיק {r.caseNumber}</div>
+              </div>
+              <div className="rep-actions">
+                <div className="rep-amount">{fmt(rtot)} ₪</div>
+                <TBadge type={r.reportType}/>
+                <button className="btn btn-g btn-sm" onClick={()=>setPrintRep(r)}>הדפסה</button>
+                <button className="btn btn-x btn-sm" onClick={()=>{if(window.confirm('למחוק?')){delReport(r.id);setReports(loadReports())}}}>✕</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  /* ─ EDITOR ─ */
+  return(
+    <div style={{height:'100vh',display:'flex',flexDirection:'column',background:'var(--bg)'}}>
+      <div className="editor-topbar">
+        <div style={{display:'flex',alignItems:'center',gap:16}}>
+          <button className="btn btn-s btn-sm" onClick={goHome}>← חזרה</button>
+          <span style={{fontSize:12,color:'var(--ink3)'}}>תיק <span style={{fontWeight:600,color:'var(--ink)'}}>{form.caseNumber}</span></span>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:18}}>
+          {pct>0&&(
+            <div style={{display:'flex',alignItems:'center',gap:10,minWidth:200}}>
+              <div style={{flex:1,height:5,background:'rgba(0,0,0,.06)',borderRadius:3,position:'relative',overflow:'hidden'}}>
+                <div style={{height:'100%',width:Math.min(pct,100)+'%',background:`linear-gradient(90deg, ${pct>=60?'#c0392b':pct>=50?'#8a5a00':'#1d7a4a'}99, ${pct>=60?'#c0392b':pct>=50?'#8a5a00':'#1d7a4a'})`,borderRadius:3,transition:'width .5s'}}/>
+              </div>
+              <span style={{fontSize:12,fontWeight:600,color:pct>=60?'var(--red)':pct>=50?'var(--amber)':'var(--green)',whiteSpace:'nowrap'}}>{pct.toFixed(1)}%</span>
+            </div>
+          )}
+          <span style={{fontSize:19,fontWeight:700,letterSpacing:'-.03em',whiteSpace:'nowrap'}}>{fmt(total)} ₪</span>
+          <button className="btn btn-g btn-sm" onClick={doSave}>שמור שומה</button>
+        </div>
+      </div>
+
+      <div className="editor" style={{flex:1}}>
+        {/* LEFT FORM */}
+        <div className="editor-left">
+
+          <div className="sec">
+            <div className="sec-t">סוג חוות הדעת</div>
+            <div className="type-mini">
+              {TYPES.map(t=>(
+                <div key={t.id} className={'tmc'+(form.reportType===t.id?' on':'')} onClick={()=>sf('reportType',t.id)}>
+                  <div className="tmc-dot" style={{background:t.c}}/>
+                  <div className="tmc-n">{t.n}</div>
+                  <div className="tmc-d">{t.d}</div>
+                </div>
+              ))}
+            </div>
+            {pct>0&&suggested!==form.reportType&&(
+              <div className="alert alert-blue" style={{marginTop:10,fontSize:12}}>
+                💡 לפי החישוב ({pct.toFixed(1)}%) מוצע: <strong>{TYPES.find(t=>t.id===suggested)?.n}</strong>
+              </div>
+            )}
+          </div>
+
+          <div className="sec">
+            <div className="sec-t">פרטי הרכב</div>
+            <LicenseLookup onResult={onVehicleLookup}/>
+            <div className="form-grid">
+              <F label="שם בעל הרכב" value={form.ownerName} onChange={v=>sf('ownerName',v)}/>
+              <F label="מספר רישוי" value={form.licenseNum} onChange={v=>sf('licenseNum',v)}/>
+              <F label="יצרן" value={form.carMake} onChange={v=>sf('carMake',v)}/>
+              <F label="דגם" value={form.carModel} onChange={v=>sf('carModel',v)}/>
+              <F label="שנת ייצור" value={form.carYear} onChange={v=>sf('carYear',v)}/>
+              <F label="מספר שילדה (VIN)" value={form.vin} onChange={v=>sf('vin',v)}/>
+              <F label="קילומטרים" value={form.km} onChange={v=>sf('km',v)} type="number"/>
+              <F label="מספר בעלים" value={form.owners} onChange={v=>sf('owners',v)} type="number"/>
+            </div>
+          </div>
+
+          <div className="sec">
+            <div className="sec-t">פרטי התיק</div>
+            <div className="form-grid">
+              <F label="מספר תיק" value={form.caseNumber} onChange={v=>sf('caseNumber',v)}/>
+              <F label="סוג נזק" value={form.damageType} onChange={v=>sf('damageType',v)} options={['תאונה','גניבה','שיטפון','שריפה','ברד','וונדליזם','אחר']}/>
+              <F label="תאריך אירוע" value={form.incidentDate} onChange={v=>sf('incidentDate',v)} type="date"/>
+              <F label="תאריך בדיקה" value={form.inspectionDate} onChange={v=>sf('inspectionDate',v)} type="date"/>
+              <F label="מוסך / מקום בדיקה" value={form.garage} onChange={v=>sf('garage',v)} span={2}/>
+            </div>
+          </div>
+
+          <div className="sec">
+            <div className="sec-t">פרטי ביטוח</div>
+            <div className="form-grid">
+              <F label="חברת ביטוח" value={form.insurance} onChange={v=>sf('insurance',v)}/>
+              <F label="מספר פוליסה" value={form.policyNum} onChange={v=>sf('policyNum',v)}/>
+              <F label="מספר תביעה" value={form.claimNum} onChange={v=>sf('claimNum',v)} span={2}/>
+            </div>
+          </div>
+
+          <div className="sec">
+            <div className="sec-t">תחשיב ערך הרכב</div>
+            <div className="form-grid">
+              <F label="ערך בסיס לפי מחירון ₪" value={form.baseValue} onChange={v=>sf('baseValue',v)} type="number"/>
+              <F label='הפחתה/תוספת ק"מ ₪' value={form.kmAdj} onChange={v=>sf('kmAdj',v)} type="number"/>
+              <F label="הפחתה/תוספת בעלויות ₪" value={form.ownersAdj} onChange={v=>sf('ownersAdj',v)} type="number"/>
+              <F label="תוספות ואביזרים ₪" value={form.extras} onChange={v=>sf('extras',v)} type="number"/>
+              <F label="ערך רכב משוערך ₪" value={fmt(form.vehicleValue)} onChange={()=>{}} readOnly/>
+              {(form.reportType==='defacto'||form.reportType==='total')&&<F label="ערך שרידים ₪" value={form.salvageValue} onChange={v=>sf('salvageValue',v)} type="number"/>}
+            </div>
+          </div>
+
+          <div className="sec">
+            <div className="sec-t">תיאורים מקצועיים</div>
+            <div style={{display:'flex',flexDirection:'column',gap:18}}>
+              {[['תיאור המקרה','incidentDesc'],['תיאור הנזקים','description'],['הערות מקצועיות','notes']].map(([l,k])=>(
+                <div key={k} className="field"><label>{l}</label><textarea value={form[k]} onChange={e=>sf(k,e.target.value)} rows={3}/></div>
+              ))}
+            </div>
+          </div>
+
+          <div className="sec">
+            <div className="sec-t">עבודות · {LR} ₪/ש"ע</div>
+            {labor.map((l,i)=>(
+              <div key={i} style={{display:'grid',gridTemplateColumns:'2fr 1fr .65fr auto',gap:'10px 12px',marginBottom:12,alignItems:'end'}}>
+                <div className="field">{i===0&&<label>תיאור עבודה</label>}<input value={l.description} onChange={e=>setLabor(prev=>prev.map((x,j)=>j===i?{...x,description:e.target.value}:x))}/></div>
+                <div className="field">{i===0&&<label>סוג</label>}<select value={l.type} onChange={e=>setLabor(prev=>prev.map((x,j)=>j===i?{...x,type:e.target.value}:x))}>{LTYPES.map(lt=><option key={lt.id} value={lt.id}>{lt.l}</option>)}</select></div>
+                <div className="field">{i===0&&<label>ש"ע</label>}<input type="number" value={l.hours} onChange={e=>setLabor(prev=>prev.map((x,j)=>j===i?{...x,hours:e.target.value}:x))}/></div>
+                <button onClick={()=>setLabor(prev=>prev.filter((_,j)=>j!==i))} style={{background:'rgba(0,0,0,.05)',border:'none',borderRadius:10,cursor:'pointer',color:'var(--ink3)',fontSize:16,padding:'10px 12px',marginTop:i===0?22:0}}>×</button>
+              </div>
+            ))}
+            <button className="btn btn-s btn-sm" onClick={()=>setLabor(prev=>[...prev,{description:'',type:'bodywork',hours:'1'}])}>+ הוסף עבודה</button>
+          </div>
+
+          <div className="sec">
+            <div className="sec-t">צביעה ועלויות נוספות</div>
+            <div className="form-grid">
+              <F label="עלות צביעה ₪" value={form.paintCost} onChange={v=>sf('paintCost',v)} type="number"/>
+              <F label="עלויות נוספות ₪" value={form.otherCost} onChange={v=>sf('otherCost',v)} type="number"/>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT PANEL */}
+        <div className="editor-right">
+          <div className="ticker">
+            {[['חלקים',tp],['עבודות',tl],['צביעה',paint],['סה"כ + מע"מ',total]].map(([l,v])=>(
+              <div key={l} className="tick">
+                <div className="tick-v">{fmt(v)} <small>₪</small></div>
+                <div className="tick-l">{l}</div>
+              </div>
+            ))}
+          </div>
+          <Gauge pct={pct}/>
+          <div className="tabs">
+            {[['diagram','סכמת הרכב'],['parts','חלקים · '+parts.length]].map(([k,l])=>(
+              <button key={k} className={'tab'+(tab===k?' on':'')} onClick={()=>setTab(k)}>{l}</button>
+            ))}
+          </div>
+
+          {tab==='diagram'&&(
+            <div style={{padding:'24px',overflowY:'auto',flex:1}}>
+              <div style={{display:'flex',gap:20,alignItems:'flex-start',marginBottom:24}}>
+                <CarSVG active={zone} onZone={setZone} damaged={damaged}/>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:11,fontWeight:600,letterSpacing:'.06em',textTransform:'uppercase',color:'var(--ink3)',marginBottom:12}}>מוקדי פגיעה</div>
+                  <div className="zpills">
+                    {ZONES.map(z=>{
+                      const cnt=parts.filter(p=>p.zone===z.id).length;
+                      return<button key={z.id} className={'zpill'+(zone===z.id?' on':damaged.includes(z.id)?' hit':'')} onClick={()=>setZone(z.id)}>{z.l}{cnt>0?' · '+cnt:''}</button>;
+                    })}
+                  </div>
+                </div>
+              </div>
+              <div style={{height:1,background:'linear-gradient(90deg,transparent,rgba(191,155,48,.5),transparent)',margin:'20px 0'}}/>
+              <div style={{fontSize:12,fontWeight:600,letterSpacing:'.08em',textTransform:'uppercase',color:'var(--gold-l)',marginBottom:14}}>
+                {ZONES.find(z=>z.id===zone)?.l}
+              </div>
+              <div className="parts">
+                {(PDB[zone]||[]).map((part,i)=>{
+                  const sel=parts.find(p=>p.name===part.n&&p.zone===zone);
+                  return(
+                    <div key={i} className={'part'+(sel?' on':'')} onClick={()=>togglePart(part,zone)}>
+                      <div className={'pchk'+(sel?' on':'')}/>
+                      <span className="pname">{part.n}</span>
+                      <span className="pprice">{fmt(part.p)} ₪</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {tab==='parts'&&(
+            <div style={{padding:'24px',flex:1,overflowY:'auto'}}>
+              {parts.length===0?(
+                <div className="empty">
+                  <div className="empty-icon">○</div>
+                  <div className="empty-h">לא נבחרו חלקים</div>
+                  <div className="empty-d">עבור לטאב "סכמת הרכב"<br/>ובחר חלקים פגועים</div>
+                </div>
+              ):(
+                <>
+                  <div style={{fontSize:11,fontWeight:600,letterSpacing:'.06em',textTransform:'uppercase',color:'var(--ink3)',marginBottom:16}}>חלקים שנבחרו · {parts.length}</div>
+                  {parts.map((p,i)=>(
+                    <div key={i} className="sel-card">
+                      <div className="sel-top">
+                        <div style={{display:'flex',alignItems:'center'}}>
+                          <span className="sel-name">{p.name}</span>
+                          <span className="sel-zone">{ZONES.find(z=>z.id===p.zone)?.l}</span>
+                        </div>
+                        <button onClick={()=>setParts(prev=>prev.filter((_,j)=>j!==i))} style={{background:'rgba(0,0,0,.06)',border:'none',width:24,height:24,borderRadius:'50%',cursor:'pointer',color:'var(--ink3)',fontSize:13}}>×</button>
+                      </div>
+                      <div className="mg">
+                        {[['פעולה',["הח'","תק'","פו'"],'action'],['מקוריות',['תחליפי','מקורי','משומש','תואם'],'origin']].map(([label,opts,key])=>(
+                          <div key={key} className="mg-f">
+                            <label>{label}</label>
+                            <select value={p[key]} onChange={e=>updPart(i,key,e.target.value)}>{opts.map(o=><option key={o}>{o}</option>)}</select>
+                          </div>
+                        ))}
+                        <div className="mg-f"><label>בלאי %</label><input type="number" value={p.wear||''} placeholder="0" onChange={e=>updPart(i,'wear',e.target.value)}/></div>
+                        <div className="mg-f"><label>מחיר ₪</label><input type="number" value={p.price} onChange={e=>updPart(i,'price',Number(e.target.value))} style={{background:'rgba(191,155,48,.12)',color:'var(--gold-l)',fontWeight:700}}/></div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
-
 </body>
 </html>
