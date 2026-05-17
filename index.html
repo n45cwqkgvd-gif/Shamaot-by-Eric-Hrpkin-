@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vehicle Appraisal</title>
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,Arial,sans-serif;background:#f5f5f7;color:#1d1d1f;direction:rtl;-webkit-font-smoothing:antialiased}
+.nav{background:#fff;border-bottom:1px solid #e0e0e0;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-brand{font-size:17px;font-weight:700}
+.btn{padding:8px 16px;border:none;border-radius:980px;cursor:pointer;font-size:13px;font-weight:600;background:#1d1d1f;color:#fff;font-family:inherit}
+.btn-s{background:rgba(0,0,0,.08);color:#1d1d1f}
+.btn-g{background:#bf9b30;color:#fff}
+.btn-r{background:transparent;color:#c0392b;border:none;cursor:pointer;font-size:12px;font-family:inherit}
+.hero{padding:44px 28px 28px}
+.hero h2{font-size:40px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px}
+.hero p{font-size:15px;color:#6e6e73;font-weight:300}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 28px 28px}
+.card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 10px rgba(0,0,0,.07);cursor:pointer;border:2px solid transparent;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-2px)}
+.card.active{border-color:#1d1d1f}
+.card h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.card p{font-size:11px;color:#6e6e73}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 28px 24px}
+.stat{background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.stat-n{font-size:26px;font-weight:700}
+.stat-l{font-size:10px;color:#6e6e73;margin-top:3px}
+.rlist{padding:0 28px 36px}
+.rlist-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#999;margin-bottom:10px}
+.ri{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.07);gap:8px;flex-wrap:wrap}
+.ri-n{font-size:14px;font-weight:600}
+.ri-m{font-size:11px;color:#6e6e73;margin-top:2px}
+.ri-acts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:980px;font-size:10px;font-weight:600}
+.bg{background:rgba(29,122,74,.1);color:#1d7a4a}
+.ba{background:rgba(138,90,0,.1);color:#8a5a00}
+.br{background:rgba(192,57,43,.1);color:#c0392b}
+.noprof{background:rgba(191,155,48,.1);border:1px solid rgba(191,155,48,.3);border-radius:10px;padding:12px 16px;font-size:13px;color:#7a5a00;margin:0 28px 28px}
+.editor{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 52px);overflow:hidden}
+.eleft{overflow-y:auto;padding:20px 24px;border-left:1px solid #e0e0e0;background:#fff}
+.eright{display:flex;flex-direction:column;background:#f5f5f7;overflow:hidden}
+.sec{margin-bottom:22px}
+.sec-t{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#6e6e73;margin-bottom:10px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+.s2{grid-column:span 2}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#999}
+.fld input,.fld select,.fld textarea{background:rgba(0,0,0,.05);border:none;border-radius:8px;padding:10px 12px;font-size:14px;color:#1d1d1f;outline:none;width:100%;font-family:inherit;-webkit-appearance:none}
+.fld input:focus,.fld select:focus,.fld textarea:focus{background:rgba(0,0,0,.09)}
+.fld textarea{resize:vertical;min-height:70px;line-height:1.5}
+.fld-ro input{background:rgba(191,155,48,.1)!important;color:#8b6914!important;font-weight:600!important}
+.lookup{background:rgba(0,113,227,.07);border:1px solid rgba(0,113,227,.2);border-radius:10px;padding:12px;margin-bottom:14px}
+.lookup-row{display:flex;gap:8px;margin-top:8px}
+.lookup-row input{flex:1;background:rgba(0,0,0,.05);border:none;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;font-family:inherit}
+.ticker{display:grid;grid-template-columns:repeat(4,1fr);background:#e0e0e0;gap:1px;flex-shrink:0}
+.tick{background:#fff;padding:10px 14px}
+.tick-v{font-size:14px;font-weight:700}
+.tick-l{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.gauge{background:#fff;padding:11px 16px;flex-shrink:0;border-bottom:1px solid #e0e0e0}
+.gauge-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.gauge-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#999}
+.gauge-bar{height:4px;background:#e0e0e0;border-radius:2px;position:relative}
+.gauge-fill{height:100%;border-radius:2px;transition:width .5s}
+.gauge-ticks{display:flex;justify-content:space-between;margin-top:3px}
+.gauge-tick{font-size:8px;color:#bbb}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #e0e0e0;flex-shrink:0}
+.tab{flex:1;padding:11px 0;border:none;background:none;cursor:pointer;font-size:11px;font-weight:500;color:#999;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;text-transform:uppercase;letter-spacing:.04em}
+.tab.on{color:#1d1d1f;border-bottom-color:#1d1d1f;font-weight:700}
+.tab-panel{padding:16px;overflow-y:auto;flex:1}
+.zpills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.zpill{padding:4px 10px;border-radius:980px;font-size:11px;font-weight:500;border:1.5px solid #ddd;background:#fff;color:#999;cursor:pointer;font-family:inherit}
+.zpill.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+.zpill.hit{border-color:rgba(192,57,43,.35);color:#c0392b;background:rgba(192,57,43,.06)}
+.pbox{border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.prow{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid rgba(0,0,0,.05);cursor:pointer}
+.prow:hover{background:#fafafa}
+.prow.sel{background:rgba(29,122,74,.05)}
+.pck{width:18px;height:18px;border-radius:50%;border:1.5px solid #ddd;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .15s}
+.pck.on{background:#1d1d1f;border-color:#1d1d1f;color:#fff}
+.pn{flex:1;font-size:13px;color:#6e6e73}
+.prow.sel .pn{color:#1d1d1f;font-weight:500}
+.pp{font-size:11px;color:#bbb}
+.sp{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.sp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sp-n{font-size:13px;font-weight:600}
+.sp-z{font-size:10px;color:#999;background:rgba(0,0,0,.06);padding:2px 8px;border-radius:980px}
+.mg{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.mf{display:flex;flex-direction:column;gap:3px}
+.mf label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999}
+.mf input,.mf select{background:rgba(0,0,0,.05);border:none;border-radius:6px;padding:6px 8px;font-size:12px;outline:none;font-family:inherit}
+.price-inp{background:rgba(191,155,48,.12)!important;color:#8b6914!important;font-weight:700!important}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:26px 22px 36px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+@media(max-width:640px){
+  .hero{padding:28px 16px 20px} .hero h2{font-size:30px}
+  .cards{grid-template-columns:1fr;padding:0 16px 20px}
+  .stats{grid-template-columns:repeat(3,1fr);padding:0 16px 20px;gap:8px}
+  .rlist{padding:0 16px 28px} .noprof{margin:0 16px 20px}
+  .editor{grid-template-columns:1fr;height:auto;overflow:visible}
+  .eleft{border-left:none;border-bottom:1px solid #e0e0e0}
+  .eright{min-height:50vh}
+  .fg{grid-template-columns:1fr} .s2{grid-column:span 1}
+  .ticker{grid-template-columns:1fr 1fr}
+  .mg{grid-template-columns:1fr 1fr}
+  .fld input,.fld select,.fld textarea{font-size:16px}
+  .lookup-row{flex-direction:column}
+}
+@media print{.noprint{display:none!important}*{-webkit-print-color-adjust:exact!important}}
+
+</style>
+</head>
+<body>
+<div id="app">Loading...</div>
+<script>
+var H = {"appTitle": "\u05e9\u05de\u05d0\u05d5\u05ea \u05e8\u05db\u05d1", "repair": "\u05dc\u05ea\u05d9\u05e7\u05d5\u05df", "defacto": "\u05d0\u05d5\u05d1\u05d3\u05df \u05dc\u05d4\u05dc\u05db\u05d4", "total": "\u05d0\u05d5\u05d1\u05d3\u05df \u05db\u05dc\u05dc\u05d9", "repair_d": "\u05e0\u05d6\u05e7 \u05e2\u05d3 50%", "defacto_d": "50%-60% \u05e0\u05e8\u05e9\u05dd \u05d1\u05e8\u05d9\u05e9\u05d9\u05d5\u05df", "total_d": "60%+ \u05d8\u05d5\u05d8\u05d0\u05dc \u05dc\u05d5\u05e1", "newReport": "+ \u05e9\u05d5\u05de\u05d4 \u05d7\u05d3\u05e9\u05d4", "archive": "\u05d0\u05e8\u05db\u05d9\u05d5\u05df", "assessorProfile": "\u05e4\u05e8\u05d8\u05d9 \u05e9\u05de\u05d0\u05d9", "save": "\u05e9\u05de\u05d5\u05e8", "cancel": "\u05d1\u05d9\u05d8\u05d5\u05dc", "back": "\u2190 \u05d7\u05d6\u05e8\u05d4", "print": "\u05d4\u05d3\u05e4\u05e1\u05d4", "delete": "\u05de\u05d7\u05e7", "setup": "\u05d4\u05d2\u05d3\u05e8 \u05e2\u05db\u05e9\u05d9\u05d5", "noProfile": "\u05d8\u05e8\u05dd \u05d4\u05d2\u05d3\u05e8\u05ea \u05e4\u05e8\u05d8\u05d9 \u05e9\u05de\u05d0\u05d9 \u2014 ", "reportsCreated": "\u05e9\u05d5\u05de\u05d5\u05ea \u05e9\u05e0\u05d5\u05e6\u05e8\u05d5", "fetchBtn": "\u05e9\u05dc\u05d5\u05e3", "fetchTitle": "\u05e9\u05dc\u05d9\u05e4\u05d4 \u05d0\u05d5\u05d8\u05d5\u05de\u05d8\u05d9\u05ea", "fetchPh": "\u05de\u05e1\u05e4\u05e8 \u05e8\u05d9\u05e9\u05d5\u05d9", "saving": "\u05e9\u05d5\u05de\u05e8 \u05e9\u05d5\u05de\u05d4", "printPdf": "\u05d4\u05d3\u05e4\u05e1\u05d4 / PDF", "close": "\u05e1\u05d2\u05d5\u05e8", "sec_type": "\u05e1\u05d5\u05d2 \u05d7\u05d5\u05d5\u05ea \u05d4\u05d3\u05e2\u05ea", "sec_veh": "\u05e4\u05e8\u05d8\u05d9 \u05d4\u05e8\u05db\u05d1", "sec_case": "\u05e4\u05e8\u05d8\u05d9 \u05d4\u05ea\u05d9\u05e7", "sec_ins": "\u05e4\u05e8\u05d8\u05d9 \u05d1\u05d9\u05d8\u05d5\u05d7", "sec_val": "\u05ea\u05d7\u05e9\u05d9\u05d1 \u05e2\u05e8\u05da \u05d4\u05e8\u05db\u05d1", "sec_desc": "\u05ea\u05d9\u05d0\u05d5\u05e8\u05d9\u05dd", "sec_labor": "\u05e2\u05d1\u05d5\u05d3\u05d5\u05ea", "sec_paint": "\u05e6\u05d1\u05d9\u05e2\u05d4", "f_owner": "\u05e9\u05dd \u05d1\u05e2\u05dc \u05d4\u05e8\u05db\u05d1", "f_license": "\u05de\u05e1\u05e4\u05e8 \u05e8\u05d9\u05e9\u05d5\u05d9", "f_make": "\u05d9\u05e6\u05e8\u05df", "f_model": "\u05d3\u05d2\u05dd", "f_year": "\u05e9\u05e0\u05ea \u05d9\u05d9\u05e6\u05d5\u05e8", "f_vin": "VIN", "f_km": "\u05e7\u05d9\u05dc\u05d5\u05de\u05d8\u05e8\u05d9\u05dd", "f_owners": "\u05de\u05e1\u05e4\u05e8 \u05d1\u05e2\u05dc\u05d9\u05dd", "f_color": "\u05e6\u05d1\u05e2", "f_fuel": "\u05e1\u05d5\u05d2 \u05d3\u05dc\u05e7", "f_cc": "\u05e0\u05e4\u05d7 \u05de\u05e0\u05d5\u05e2", "f_gearbox": "\u05e1\u05d5\u05d2 \u05d2\u05d9\u05e8", "f_first_reg": "\u05ea\u05d0\u05e8\u05d9\u05db \u05e2\u05dc\u05d9\u05d9\u05d4 \u05dc\u05db\u05d1\u05d9\u05e9", "f_expiry": "\u05ea\u05d5\u05e7\u05e3 \u05e8\u05d9\u05e9\u05d9\u05d5\u05df", "f_ownership": "\u05d1\u05e2\u05dc\u05d5\u05ea", "f_case": "\u05de\u05e1\u05e4\u05e8 \u05ea\u05d9\u05e7", "f_damage_type": "\u05e1\u05d5\u05d2 \u05e0\u05d6\u05e7", "f_incident": "\u05ea\u05d0\u05e8\u05d9\u05da \u05d0\u05d9\u05e8\u05d5\u05e2", "f_inspection": "\u05ea\u05d0\u05e8\u05d9\u05da \u05d1\u05d3\u05d9\u05e7\u05d4", "f_garage": "\u05de\u05d5\u05e1\u05da", "f_insurance": "\u05d7\u05d1\u05e8\u05ea \u05d1\u05d9\u05d8\u05d5\u05d7", "f_policy": "\u05de\u05e1\u05e4\u05e8 \u05e4\u05d5\u05dc\u05d9\u05e1\u05d4", "f_claim": "\u05de\u05e1\u05e4\u05e8 \u05ea\u05d1\u05d9\u05e2\u05d4", "f_base_val": "\u05e2\u05e8\u05da \u05d1\u05e1\u05d9\u05e1", "f_km_adj": "\u05d4\u05e4\u05d7\u05ea\u05d4/\u05ea\u05d5\u05e1\u05e4\u05ea \u05e7\u05de", "f_owners_adj": "\u05d4\u05e4\u05d7\u05ea\u05d4/\u05ea\u05d5\u05e1\u05e4\u05ea \u05d1\u05e2\u05dc\u05d9\u05d5\u05ea", "f_extras": "\u05ea\u05d5\u05e1\u05e4\u05d5\u05ea", "f_vehicle_val": "\u05e2\u05e8\u05da \u05e8\u05db\u05d1 \u05de\u05e9\u05d5\u05e2\u05e8\u05da", "f_salvage": "\u05e2\u05e8\u05da \u05e9\u05e8\u05d9\u05d3\u05d9\u05dd", "f_incident_desc": "\u05ea\u05d9\u05d0\u05d5\u05e8 \u05d4\u05de\u05e7\u05e8\u05d4", "f_damage_desc": "\u05ea\u05d9\u05d0\u05d5\u05e8 \u05d4\u05e0\u05d6\u05e7\u05d9\u05dd", "f_notes": "\u05d4\u05e2\u05e8\u05d5\u05ea", "f_labor_desc": "\u05ea\u05d9\u05d0\u05d5\u05e8 \u05e2\u05d1\u05d5\u05d3\u05d4", "f_type": "\u05e1\u05d5\u05d2", "f_hours": "\u05e9\u05e2\u05d5\u05ea", "add_labor": "\u05d4\u05d5\u05e1\u05e3 \u05e2\u05d1\u05d5\u05d3\u05d4", "f_paint": "\u05e2\u05dc\u05d5\u05ea \u05e6\u05d1\u05d9\u05e2\u05d4", "f_other_cost": "\u05e2\u05dc\u05d5\u05d9\u05d5\u05ea \u05e0\u05d5\u05e1\u05e4\u05d5\u05ea", "t_parts": "\u05d7\u05dc\u05e7\u05d9\u05dd", "t_labor": "\u05e2\u05d1\u05d5\u05d3\u05d5\u05ea", "t_paint": "\u05e6\u05d1\u05d9\u05e2\u05d4", "t_total": "\u05e1\u05d4\u05db + \u05de\u05e2\u05de", "gauge_lbl": "\u05d0\u05d7\u05d5\u05d6 \u05e0\u05d6\u05e7", "tab_diagram": "\u05e1\u05db\u05de\u05ea \u05d4\u05e8\u05db\u05d1", "tab_parts": "\u05d7\u05dc\u05e7\u05d9\u05dd", "no_parts": "\u05dc\u05d0 \u05e0\u05d1\u05d7\u05e8\u05d5 \u05d7\u05dc\u05e7\u05d9\u05dd", "select_zone": "\u05d1\u05d7\u05e8 \u05de\u05d5\u05e7\u05d3", "f_action": "\u05e4\u05e2\u05d5\u05dc\u05d4", "f_origin": "\u05de\u05e7\u05d5\u05e8\u05d9\u05d5\u05ea", "f_wear": "\u05d1\u05dc\u05d0\u05d9 %", "f_price": "\u05de\u05d7\u05d9\u05e8", "prof_title": "\u05e4\u05e8\u05d8\u05d9 \u05d4\u05e9\u05de\u05d0\u05d9", "prof_name": "\u05e9\u05dd \u05de\u05dc\u05d0", "prof_lic": "\u05e8\u05d9\u05e9\u05d9\u05d5\u05df", "prof_addr": "\u05db\u05ea\u05d5\u05d1\u05ea", "prof_phone": "\u05d8\u05dc\u05e4\u05d5\u05df", "prof_email": "\u05d3\u05d5\u05d0\u05dc", "prof_since": "\u05e9\u05de\u05d0\u05d9 \u05de\u05d0\u05d6", "prof_edu": "\u05d4\u05e9\u05db\u05dc\u05d4", "prof_certs": "\u05d4\u05e1\u05de\u05db\u05d5\u05ea", "zone_select": "\u05d1\u05d7\u05e8 \u05d0\u05d6\u05d5\u05e8", "print_title": "\u05d7\u05d5\u05d5\u05ea \u05d3\u05e2\u05ea - \u05e9\u05d5\u05de\u05ea \u05e0\u05d6\u05e7 \u05e8\u05db\u05d1", "pg_summary": "\u05e1\u05d9\u05db\u05d5\u05dd", "pg_value": "\u05e2\u05e8\u05da \u05d4\u05e8\u05db\u05d1", "pg_case": "\u05e4\u05e8\u05d8\u05d9 \u05d4\u05ea\u05d9\u05e7", "pg_damage": "\u05d0\u05d5\u05de\u05d3\u05df \u05d4\u05e0\u05d6\u05e7", "pg_decl": "\u05d4\u05e6\u05d4\u05e8\u05d4", "declaration": "\u05d0\u05e0\u05d9 \u05e0\u05d5\u05ea\u05df \u05d7\u05d5\u05d5\u05ea \u05d3\u05e2\u05ea\u05d9 \u05d6\u05d5 \u05d1\u05de\u05e7\u05d5\u05dd \u05e2\u05d3\u05d5\u05ea \u05d1\u05d1\u05d9\u05ea \u05d4\u05de\u05e9\u05e4\u05d8, \u05d5\u05d4\u05e8\u05d9\u05e0\u05d9 \u05de\u05e6\u05d4\u05d9\u05e8 \u05d1\u05d6\u05d4 \u05db\u05d9 \u05d9\u05d3\u05d5\u05e2 \u05dc\u05d9 \u05d4\u05d9\u05d8\u05d1, \u05e9\u05dc\u05e2\u05e0\u05d9\u05df \u05d4\u05d5\u05e8\u05d0\u05d5\u05ea \u05d4\u05d7\u05d5\u05e7 \u05d4\u05e4\u05dc\u05d9\u05dc\u05d9 \u05d1\u05d3\u05d1\u05e8 \u05e2\u05d3\u05d5\u05ea \u05e9\u05e7\u05e8 \u05d1\u05e9\u05d1\u05d5\u05e2\u05d4, \u05d3\u05d9\u05df \u05d7\u05d5\u05d5\u05ea \u05d3\u05e2\u05ea\u05d9 \u05d6\u05d5 \u05db\u05d3\u05d9\u05df \u05e2\u05d3\u05d5\u05ea \u05d1\u05d1\u05d9\u05ea \u05d4\u05de\u05e9\u05e4\u05d8.", "save_alert": "\u05e0\u05d0 \u05dc\u05de\u05dc\u05d0 \u05e9\u05dd \u05d1\u05e2\u05dc \u05d4\u05e8\u05db\u05d1", "confirm_del": "\u05dc\u05de\u05d7\u05d5\u05e7?", "empty_arch": "\u05d0\u05d9\u05df \u05e9\u05d5\u05de\u05d5\u05ea", "col_desc": "\u05ea\u05d9\u05d0\u05d5\u05e8", "col_zone": "\u05de\u05d5\u05e7\u05d3", "col_action": "\u05e4\u05e2\u05d5\u05dc\u05d4", "col_origin": "\u05de\u05e7\u05d5\u05e8\u05d9\u05d5\u05ea", "col_wear": "\u05d1\u05dc\u05d0\u05d9", "col_cost": "\u05e2\u05dc\u05d5\u05ea", "ils": "\u05e9\u05e7\u05dc", "total_pay": "\u05e1\u05d4\u05db \u05dc\u05ea\u05e9\u05dc\u05d5\u05dd", "dmg_sub": "\u05e1\u05d4\u05db \u05dc\u05dc\u05d0 \u05de\u05e2\u05de", "vat": "\u05de\u05e2\u05de 17%", "prof_heading": "\u05e9\u05db\u05dc\u05ea \u05d5\u05e0\u05d9\u05e1\u05d9\u05d5\u05df \u05d4\u05e9\u05de\u05d0\u05d9", "lic_label": "\u05e8\u05d9\u05e9\u05d9\u05d5\u05df", "submitted_to": "\u05de\u05d5\u05d2\u05e9 \u05dc\u05db\u05d1\u05d5\u05d3","edit_btn":"\u05e2\u05e8\u05d5\u05da"};
+
+var VAT = 0.17;
+var LR = 180;
+
+var TYPES = [
+  {id:"repair",  n:H.repair,  c:"#1d7a4a", bc:"bg", d:H.repair_d},
+  {id:"defacto", n:H.defacto, c:"#8a5a00", bc:"ba", d:H.defacto_d},
+  {id:"total",   n:H.total,   c:"#c0392b", bc:"br", d:H.total_d}
+];
+
+var ZONES_DATA = [{"id":"front","l":"\u05d7\u05d6\u05d9\u05ea"},{"id":"front_right","l":"\u05d7\u05d6\u05d9\u05ea \u05d9\u05de\u05d9\u05df"},{"id":"front_left","l":"\u05d7\u05d6\u05d9\u05ea \u05e9\u05de\u05d0\u05dc"},{"id":"right","l":"\u05e6\u05d3 \u05d9\u05de\u05d9\u05df"},{"id":"left","l":"\u05e6\u05d3 \u05e9\u05de\u05d0\u05dc"},{"id":"rear","l":"\u05d0\u05d7\u05d5\u05e8"},{"id":"rear_right","l":"\u05d0\u05d7\u05d5\u05e8 \u05d9\u05de\u05d9\u05df"},{"id":"rear_left","l":"\u05d0\u05d7\u05d5\u05e8 \u05e9\u05de\u05d0\u05dc"},{"id":"roof","l":"\u05d2\u05d2"},{"id":"engine","l":"\u05ea\u05d0 \u05de\u05e0\u05d5\u05e2"},{"id":"underbody","l":"\u05ea\u05d7\u05ea\u05d9\u05ea"},{"id":"glass","l":"\u05d6\u05db\u05d5\u05db\u05d9\u05d5\u05ea"},{"id":"interior","l":"\u05e4\u05e0\u05d9\u05dd"},{"id":"electrical","l":"\u05d7\u05e9\u05de\u05dc"},{"id":"wheels","l":"\u05d2\u05dc\u05d2\u05dc\u05d9\u05dd"}]
+
+var PARTS_DATA = {"front":[{"\u05e0":"\u05e4\u05d2\u05d5\u05e9 \u05e7\u05d3\u05de\u05d9","p":2200,"dh":1.5,"pc":750,"bw":900},{"\u05e0":"\u05e7\u05d5\u05e8\u05d4 \u05e4\u05e0\u05d9\u05de\u05d9\u05ea \u05e4\u05d2\u05d5\u05e9","p":1600,"dh":1.2,"pc":0,"bw":0},{"\u05e0":"\u05de\u05db\u05e1\u05d4 \u05de\u05e0\u05d5\u05e2","p":2800,"dh":0.8,"pc":900,"bw":700},{"\u05e0":"\u05d2\u05e8\u05d9\u05dc \u05e7\u05d3\u05de\u05d9","p":700,"dh":0.5,"pc":650,"bw":0},{"\u05e0":"\u05e4\u05e0\u05e1 \u05e8\u05d0\u05e9\u05d9 \u05d9\u05de\u05d9\u05df","p":1400,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05e0\u05e1 \u05e8\u05d0\u05e9\u05d9 \u05e9\u05de\u05d0\u05dc","p":1400,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05e1\u05e4\u05d5\u05d9\u05dc\u05e8 \u05ea\u05d7\u05ea\u05d5\u05df","p":900,"dh":0.5,"pc":600,"bw":0},{"\u05e0":"\u05dc\u05d5\u05d7\u05d9\u05ea \u05e8\u05d9\u05e9\u05d5\u05d9 \u05e7\u05d3\u05de\u05d9\u05ea","p":160,"dh":0.1,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e6\u05e0\u05df \u05de\u05d9\u05dd","p":1900,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05e7\u05d5\u05e0\u05d3\u05e0\u05e1\u05d5\u05e8 \u05de\u05d6\u05d2\u05df","p":1500,"dh":1.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05d0\u05d5\u05e8\u05e8 \u05de\u05e0\u05d5\u05e2","p":650,"dh":0.8,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d9\u05d8\u05e0\u05ea \u05db\u05e0\u05e3 \u05d9\u05de\u05d9\u05df","p":420,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d9\u05d8\u05e0\u05ea \u05db\u05e0\u05e3 \u05e9\u05de\u05d0\u05dc","p":420,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05e1\u05de\u05dc \u05e7\u05d3\u05de\u05d9","p":280,"dh":0.2,"pc":0,"bw":0},{"\u05e0":"\u05e6\u05d9\u05e0\u05d5\u05e8 \u05de\u05d6\u05d2\u05df \u05d0\u05d5\u05d5\u05d9\u05e8","p":380,"dh":0.5,"pc":0,"bw":0}],"front_right":[{"\u05e0":"\u05db\u05e0\u05e3 \u05e7\u05d3\u05de\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":2000,"dh":2.5,"pc":800,"bw":800},{"\u05e0":"\u05e4\u05e0\u05e1 \u05e8\u05d0\u05e9\u05d9 \u05d9\u05de\u05d9\u05df","p":1400,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05d2\u05d5\u05e9 \u05e7\u05d3\u05de\u05d9 \u05d9\u05de\u05d9\u05df","p":900,"dh":0.8,"pc":650,"bw":700},{"\u05e0":"\u05de\u05d2\u05df \u05d2\u05dc\u05d2\u05dc \u05e7\u05d3\u05de\u05d9 \u05d9\u05de\u05d9\u05df","p":320,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d9\u05d8\u05e0\u05ea \u05db\u05e0\u05e3 \u05d9\u05de\u05d9\u05df","p":420,"dh":0.3,"pc":0,"bw":0}],"front_left":[{"\u05e0":"\u05db\u05e0\u05e3 \u05e7\u05d3\u05de\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":2000,"dh":2.5,"pc":800,"bw":800},{"\u05e0":"\u05e4\u05e0\u05e1 \u05e8\u05d0\u05e9\u05d9 \u05e9\u05de\u05d0\u05dc","p":1400,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05d2\u05d5\u05e9 \u05e7\u05d3\u05de\u05d9 \u05e9\u05de\u05d0\u05dc","p":900,"dh":0.8,"pc":650,"bw":700},{"\u05e0":"\u05de\u05d2\u05df \u05d2\u05dc\u05d2\u05dc \u05e7\u05d3\u05de\u05d9 \u05e9\u05de\u05d0\u05dc","p":320,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d9\u05d8\u05e0\u05ea \u05db\u05e0\u05e3 \u05e9\u05de\u05d0\u05dc","p":420,"dh":0.3,"pc":0,"bw":0}],"right":[{"\u05e0":"\u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":3800,"dh":3.0,"pc":750,"bw":1200},{"\u05e0":"\u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":3500,"dh":3.0,"pc":750,"bw":1200},{"\u05e0":"\u05e1\u05e3 \u05d9\u05de\u05d9\u05df","p":1300,"dh":2.0,"pc":700,"bw":1000},{"\u05e0":"\u05e4\u05d7 \u05d3\u05d5\u05e4\u05df \u05d9\u05de\u05d9\u05df","p":2200,"dh":4.0,"pc":900,"bw":1500},{"\u05e0":"\u05d9\u05d3\u05d9\u05ea \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":280,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05d9\u05d3\u05d9\u05ea \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":280,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e8\u05d0\u05d4 \u05d7\u05d9\u05e6\u05d5\u05e0\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":600,"dh":0.5,"pc":500,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":900,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":750,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e0\u05e2\u05d5\u05dc \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":450,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e0\u05e2\u05d5\u05dc \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":450,"dh":0.5,"pc":0,"bw":0}],"left":[{"\u05e0":"\u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":3800,"dh":3.0,"pc":750,"bw":1200},{"\u05e0":"\u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":3500,"dh":3.0,"pc":750,"bw":1200},{"\u05e0":"\u05e1\u05e3 \u05e9\u05de\u05d0\u05dc","p":1300,"dh":2.0,"pc":700,"bw":1000},{"\u05e0":"\u05e4\u05d7 \u05d3\u05d5\u05e4\u05df \u05e9\u05de\u05d0\u05dc","p":2200,"dh":4.0,"pc":900,"bw":1500},{"\u05e0":"\u05d9\u05d3\u05d9\u05ea \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":280,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05d9\u05d3\u05d9\u05ea \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":280,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e8\u05d0\u05d4 \u05d7\u05d9\u05e6\u05d5\u05e0\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":600,"dh":0.5,"pc":500,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":900,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":750,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e0\u05e2\u05d5\u05dc \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":450,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e0\u05e2\u05d5\u05dc \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":450,"dh":0.5,"pc":0,"bw":0}],"rear":[{"\u05e0":"\u05e4\u05d2\u05d5\u05e9 \u05d0\u05d7\u05d5\u05e8\u05d9","p":2000,"dh":1.5,"pc":750,"bw":900},{"\u05e0":"\u05e4\u05e0\u05e1 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05d9\u05de\u05d9\u05df","p":1000,"dh":0.4,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05e0\u05e1 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05e9\u05de\u05d0\u05dc","p":1000,"dh":0.4,"pc":0,"bw":0},{"\u05e0":"\u05de\u05db\u05e1\u05d4 \u05ea\u05d0 \u05de\u05d8\u05e2\u05df","p":2200,"dh":1.0,"pc":900,"bw":700},{"\u05e0":"\u05e4\u05d7 \u05d0\u05d7\u05d5\u05e8\u05d9","p":1600,"dh":3.0,"pc":900,"bw":1400},{"\u05e0":"\u05e1\u05e4\u05d5\u05d9\u05dc\u05e8 \u05d0\u05d7\u05d5\u05e8\u05d9","p":750,"dh":0.5,"pc":600,"bw":0},{"\u05e0":"\u05dc\u05d5\u05d7\u05d9\u05ea \u05e8\u05d9\u05e9\u05d5\u05d9 \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea","p":160,"dh":0.1,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e6\u05dc\u05de\u05ea \u05e8\u05d5\u05d7\u05d6\u05e8","p":600,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d9\u05ea \u05e4\u05e0\u05e1 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05d9\u05de\u05d9\u05df","p":450,"dh":0.6,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d9\u05ea \u05e4\u05e0\u05e1 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05e9\u05de\u05d0\u05dc","p":450,"dh":0.6,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea","p":1100,"dh":1.5,"pc":0,"bw":0}],"rear_right":[{"\u05e0":"\u05db\u05e0\u05e3 \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":2500,"dh":3.5,"pc":850,"bw":1000},{"\u05e0":"\u05e4\u05e0\u05e1 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05d9\u05de\u05d9\u05df","p":1000,"dh":0.4,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d9\u05ea \u05d2\u05dc\u05d2\u05dc \u05d0\u05d7\u05d5\u05e8\u05d9 \u05d9\u05de\u05d9\u05df","p":650,"dh":1.2,"pc":0,"bw":0},{"\u05e0":"\u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":3500,"dh":3.0,"pc":750,"bw":1200},{"\u05e0":"\u05de\u05d2\u05df \u05d0\u05d7\u05d5\u05e8\u05d9 \u05d9\u05de\u05d9\u05df","p":800,"dh":0.6,"pc":600,"bw":600}],"rear_left":[{"\u05e0":"\u05db\u05e0\u05e3 \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":2500,"dh":3.5,"pc":850,"bw":1000},{"\u05e0":"\u05e4\u05e0\u05e1 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05e9\u05de\u05d0\u05dc","p":1000,"dh":0.4,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d9\u05ea \u05d2\u05dc\u05d2\u05dc \u05d0\u05d7\u05d5\u05e8\u05d9 \u05e9\u05de\u05d0\u05dc","p":650,"dh":1.2,"pc":0,"bw":0},{"\u05e0":"\u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":3500,"dh":3.0,"pc":750,"bw":1200},{"\u05e0":"\u05de\u05d2\u05df \u05d0\u05d7\u05d5\u05e8\u05d9 \u05e9\u05de\u05d0\u05dc","p":800,"dh":0.6,"pc":600,"bw":600}],"roof":[{"\u05e0":"\u05d2\u05d2","p":5000,"dh":8.0,"pc":1400,"bw":1200},{"\u05e0":"\u05e1\u05e4\u05d5\u05d9\u05dc\u05e8 \u05d2\u05d2","p":900,"dh":0.8,"pc":600,"bw":0},{"\u05e0":"\u05de\u05e1\u05d2\u05e8\u05ea \u05e9\u05de\u05e9\u05d4 \u05e7\u05d3\u05de\u05d9\u05ea","p":700,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e1\u05d2\u05e8\u05ea \u05e9\u05de\u05e9\u05d4 \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea","p":700,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05e9\u05de\u05e9\u05d4 \u05e7\u05d3\u05de\u05d9\u05ea","p":2200,"dh":2.5,"pc":0,"bw":0},{"\u05e0":"\u05e9\u05de\u05e9\u05d4 \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea","p":1800,"dh":2.5,"pc":0,"bw":0},{"\u05e0":"\u05e8\u05d9\u05e4\u05d5\u05d3 \u05ea\u05e7\u05e8\u05d4","p":1200,"dh":3.0,"pc":0,"bw":0},{"\u05e0":"\u05d2\u05d2 \u05e9\u05de\u05e9 (sunroof)","p":0,"dh":2.0,"pc":0,"bw":0}],"engine":[{"\u05e0":"\u05de\u05e0\u05d5\u05e2","p":18000,"dh":12.0,"pc":0,"bw":0},{"\u05e0":"\u05ea\u05d9\u05d1\u05ea \u05d4\u05d9\u05dc\u05d5\u05db\u05d9\u05dd","p":9000,"dh":8.0,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e6\u05d1\u05e8","p":550,"dh":0.4,"pc":0,"bw":0},{"\u05e0":"\u05d0\u05dc\u05d8\u05e8\u05e0\u05d8\u05d5\u05e8","p":1400,"dh":1.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e9\u05d0\u05d1\u05ea \u05de\u05d9\u05dd","p":700,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05e8\u05e6\u05d5\u05e2\u05d5\u05ea \u05d4\u05e0\u05e2\u05d4","p":350,"dh":1.5,"pc":0,"bw":0},{"\u05e0":"\u05d8\u05d5\u05e8\u05d1\u05d5","p":4500,"dh":3.0,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e6\u05e0\u05df \u05e9\u05de\u05df","p":800,"dh":1.0,"pc":0,"bw":0},{"\u05e0":"\u05e7\u05d5\u05de\u05e4\u05e8\u05e1\u05d5\u05e8 \u05de\u05d6\u05d2\u05df","p":2200,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e9\u05e7\u05dc\u05ea \u05d4\u05d9\u05d2\u05d5\u05d9","p":1200,"dh":2.5,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05d5\u05e7\u05e1\u05ea \u05d0\u05d5\u05d5\u05d9\u05e8","p":650,"dh":1.5,"pc":0,"bw":0}],"underbody":[{"\u05e0":"\u05e7\u05d5\u05e8\u05d5\u05ea \u05ea\u05d7\u05ea\u05d9\u05ea","p":3500,"dh":6.0,"pc":0,"bw":0},{"\u05e0":"\u05de\u05d9\u05db\u05dc \u05d3\u05dc\u05e7","p":2200,"dh":2.5,"pc":0,"bw":0},{"\u05e0":"\u05e6\u05d9\u05e0\u05d5\u05e8\u05d5\u05ea \u05d1\u05dc\u05de\u05d9\u05dd","p":800,"dh":2.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e2\u05e8\u05db\u05ea \u05d4\u05d2\u05d4","p":4000,"dh":4.0,"pc":0,"bw":0},{"\u05e0":"\u05e6\u05d9\u05e8 \u05e7\u05d3\u05de\u05d9","p":2500,"dh":3.5,"pc":0,"bw":0},{"\u05e0":"\u05e6\u05d9\u05e8 \u05d0\u05d7\u05d5\u05e8\u05d9","p":2000,"dh":3.5,"pc":0,"bw":0},{"\u05e0":"\u05d3\u05d9\u05e1\u05e7\u05d9\u05dd \u05e7\u05d3\u05de\u05d9\u05d9\u05dd","p":900,"dh":1.5,"pc":0,"bw":0},{"\u05e0":"\u05d3\u05d9\u05e1\u05e7\u05d9\u05dd \u05d0\u05d7\u05d5\u05e8\u05d9\u05d9\u05dd","p":700,"dh":1.5,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05dc\u05de\u05d9\u05dd \u05e7\u05d3\u05de\u05d9\u05d9\u05dd","p":320,"dh":1.0,"pc":0,"bw":0},{"\u05e0":"\u05d1\u05dc\u05de\u05d9\u05dd \u05d0\u05d7\u05d5\u05e8\u05d9\u05d9\u05dd","p":280,"dh":1.0,"pc":0,"bw":0},{"\u05e0":"\u05e1\u05dc\u05e0\u05d5\u05d0\u05d9\u05dd \u05e7\u05d3\u05de\u05d9\u05d9\u05dd","p":600,"dh":1.5,"pc":0,"bw":0},{"\u05e0":"\u05e1\u05dc\u05e0\u05d5\u05d0\u05d9\u05dd \u05d0\u05d7\u05d5\u05e8\u05d9\u05d9\u05dd","p":500,"dh":1.5,"pc":0,"bw":0}],"glass":[{"\u05e0":"\u05e9\u05de\u05e9\u05d4 \u05e7\u05d3\u05de\u05d9\u05ea","p":2200,"dh":2.5,"pc":0,"bw":0},{"\u05e0":"\u05e9\u05de\u05e9\u05d4 \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea","p":1800,"dh":2.5,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":900,"dh":0.8,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":900,"dh":0.8,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":750,"dh":0.8,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":750,"dh":0.8,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05e7\u05d8\u05e0\u05d4 (\u05d5\u05d5\u05e0\u05d8)","p":500,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05d6\u05d2\u05d5\u05d2\u05d9\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e7\u05d8\u05e0\u05d4 (\u05d5\u05d5\u05e0\u05d8)","p":450,"dh":0.5,"pc":0,"bw":0}],"interior":[{"\u05e0":"\u05db\u05e8\u05d9\u05ea \u05d0\u05d5\u05d5\u05d9\u05e8 \u05e0\u05d4\u05d2","p":1800,"dh":3.0,"pc":0,"bw":0},{"\u05e0":"\u05db\u05e8\u05d9\u05ea \u05d0\u05d5\u05d5\u05d9\u05e8 \u05e0\u05d5\u05e1\u05e2 \u05d9\u05de\u05d9\u05df","p":1200,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05db\u05e8\u05d9\u05ea \u05d0\u05d5\u05d5\u05d9\u05e8 \u05e0\u05d5\u05e1\u05e2 \u05e9\u05de\u05d0\u05dc","p":1200,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05dc\u05d5\u05d7 \u05de\u05d7\u05d5\u05d5\u05e0\u05d9\u05dd","p":3500,"dh":3.0,"pc":0,"bw":0},{"\u05e0":"\u05d4\u05d2\u05d4","p":800,"dh":1.0,"pc":0,"bw":0},{"\u05e0":"\u05e2\u05de\u05d5\u05d3 \u05d4\u05d2\u05d4","p":600,"dh":1.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e2\u05e6\u05d5\u05e8 \u05d9\u05d3","p":1200,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e9\u05e7\u05e3 \u05de\u05e8\u05db\u05d6\u05d9 (CarPlay/Android)","p":2800,"dh":2.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e9\u05e7\u05e3 \u05e8\u05d5\u05d7\u05d6\u05e8","p":600,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05e8\u05d9\u05e4\u05d5\u05d3 \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":650,"dh":1.0,"pc":0,"bw":0},{"\u05e0":"\u05e8\u05d9\u05e4\u05d5\u05d3 \u05d3\u05dc\u05ea \u05e7\u05d3\u05de\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":650,"dh":1.0,"pc":0,"bw":0},{"\u05e0":"\u05e8\u05d9\u05e4\u05d5\u05d3 \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":550,"dh":0.8,"pc":0,"bw":0},{"\u05e0":"\u05e8\u05d9\u05e4\u05d5\u05d3 \u05d3\u05dc\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":550,"dh":0.8,"pc":0,"bw":0},{"\u05e0":"\u05e9\u05d9\u05dc\u05d3\u05ea \u05de\u05e1\u05da","p":480,"dh":0.5,"pc":0,"bw":0}],"electrical":[{"\u05e0":"\u05e4\u05e0\u05e1 \u05e8\u05d0\u05e9\u05d9 \u05d9\u05de\u05d9\u05df LED","p":2200,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05e0\u05e1 \u05e8\u05d0\u05e9\u05d9 \u05e9\u05de\u05d0\u05dc LED","p":2200,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05e0\u05e1 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05d9\u05de\u05d9\u05df LED","p":1200,"dh":0.4,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05e0\u05e1 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05e9\u05de\u05d0\u05dc LED","p":1200,"dh":0.4,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05e0\u05e1 \u05e2\u05e8\u05e4\u05dc \u05d9\u05de\u05d9\u05df","p":280,"dh":0.2,"pc":0,"bw":0},{"\u05e0":"\u05e4\u05e0\u05e1 \u05e2\u05e8\u05e4\u05dc \u05e9\u05de\u05d0\u05dc","p":280,"dh":0.2,"pc":0,"bw":0},{"\u05e0":"\u05d7\u05d9\u05e9\u05df \u05e4\u05d0\u05e8\u05e7\u05d9\u05e0\u05d2 \u05e7\u05d3\u05de\u05d9","p":350,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05d7\u05d9\u05e9\u05df \u05e4\u05d0\u05e8\u05e7\u05d9\u05e0\u05d2 \u05d0\u05d7\u05d5\u05e8\u05d9","p":350,"dh":0.3,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e6\u05dc\u05de\u05ea \u05e8\u05d5\u05d7\u05d6\u05e8","p":800,"dh":0.8,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e6\u05dc\u05de\u05d5\u05ea 360 \u05de\u05e2\u05dc\u05d5\u05ea","p":2200,"dh":2.0,"pc":0,"bw":0},{"\u05e0":"\u05d7\u05d9\u05e9\u05df \u05e2\u05d9\u05d5\u05d5\u05e8 \u05e8\u05d9\u05e9\u05ea","p":1200,"dh":1.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e8\u05d0\u05d4 \u05d7\u05d9\u05e6\u05d5\u05e0\u05d9\u05ea \u05d7\u05e9\u05de\u05dc\u05d9\u05ea \u05d9\u05de\u05d9\u05df","p":900,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05e8\u05d0\u05d4 \u05d7\u05d9\u05e6\u05d5\u05e0\u05d9\u05ea \u05d7\u05e9\u05de\u05dc\u05d9\u05ea \u05e9\u05de\u05d0\u05dc","p":900,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05de\u05d7\u05dc\u05e3 \u05ea\u05d0\u05d5\u05e8\u05ea \\u05e1\u05d5\u05dc\u05e8\u05d9","p":180,"dh":0.2,"pc":0,"bw":0}],"wheels":[{"\u05e0":"\u05d2\u05dc\u05d2\u05dc \u05e1\u05d2\u05e1\u05d5\u05d2\u05ea \u05d0\u05dc\u05d5\u05de\u05d9\u05e0\u05d9\u05d5\u05dd 15\"","p":800,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05d2\u05dc\u05d2\u05dc \u05e1\u05d2\u05e1\u05d5\u05d2\u05ea \u05d0\u05dc\u05d5\u05de\u05d9\u05e0\u05d9\u05d5\u05dd 16\"","p":950,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05d2\u05dc\u05d2\u05dc \u05e1\u05d2\u05e1\u05d5\u05d2\u05ea \u05d0\u05dc\u05d5\u05de\u05d9\u05e0\u05d9\u05d5\u05dd 17\"","p":1100,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05d2\u05dc\u05d2\u05dc \u05e1\u05d2\u05e1\u05d5\u05d2\u05ea \u05d0\u05dc\u05d5\u05de\u05d9\u05e0\u05d9\u05d5\u05dd 18\"","p":1300,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05e6\u05de\u05d9\u05d2 205/55R16","p":450,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05e6\u05de\u05d9\u05d2 225/45R17","p":520,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05e6\u05de\u05d9\u05d2 235/45R18","p":600,"dh":0.5,"pc":0,"bw":0},{"\u05e0":"\u05d2\u05dc\u05d2\u05dc \u05e4\u05dc\u05d3\u05d9 \u05e8\u05d6\u05e8\u05d1\u05d9","p":280,"dh":0.3,"pc":0,"bw":0}]}
+
+var LTYPES = [{"id": "bodywork", "l": "\u05e4\u05d7\u05d7\u05d5\u05ea"}, {"id": "paint", "l": "\u05e6\u05d1\u05d9\u05e2\u05d4"}, {"id": "mechanical", "l": "\u05de\u05db\u05d5\u05e0\u05d0\u05d5\u05ea"}, {"id": "electrical", "l": "\u05d7\u05e9\u05de\u05dc"}, {"id": "ac", "l": "\u05de\u05d6\u05d2\u05df"}, {"id": "disassembly", "l": "\u05e4\u05d9\u05e8\u05d5\u05e7 \u05d5\u05d4\u05e8\u05db\u05d1\u05d4"}, {"id": "alignment", "l": "\u05db\u05d9\u05d5\u05d5\u05df \u05d2\u05dc\u05d2\u05dc\u05d9\u05dd"}, {"id": "frame", "l": "\u05de\u05ea\u05d9\u05d7\u05ea \u05de\u05e8\u05db\u05d1"}, {"id": "regulation", "l": "\u05ea\u05e7\u05e0\u05d4 309"}, {"id": "other", "l": "\u05d0\u05d7\u05e8"}];
+
+var FUEL_OPTS = ["", "\u05d1\u05e0\u05d6\u05d9\u05df", "\u05d3\u05d9\u05d6\u05dc", "\u05d7\u05e9\u05de\u05dc\u05d9", "\u05d4\u05d9\u05d1\u05e8\u05d9\u05d3\u05d9", "\u05d2\u05d6", "\u05d0\u05d7\u05e8"];
+
+var GEAR_OPTS = ["", "\u05d0\u05d5\u05d8\u05d5\u05de\u05d8\u05d9", "\u05d9\u05d3\u05e0\u05d9", "\u05e8\u05d5\u05d1\u05d5\u05d8\u05d9"];
+
+var OWN_OPTS = ["", "\u05e4\u05e8\u05d8\u05d9", "\u05d7\u05d1\u05e8\u05d4", "\u05d4\u05e9\u05db\u05e8\u05d4", "\u05dc\u05d9\u05e1\u05d9\u05e0\u05d2", "\u05d0\u05d7\u05e8"];
+
+var DMG_OPTS = ["\u05ea\u05d0\u05d5\u05e0\u05d4", "\u05d2\u05e0\u05d9\u05d1\u05d4", "\u05e9\u05d9\u05d8\u05e4\u05d5\u05df", "\u05e9\u05e8\u05d9\u05e4\u05d4", "\u05d1\u05e8\u05d3", "\u05d5\u05d5\u05e0\u05d3\u05dc\u05d9\u05d6\u05dd", "\u05d0\u05d7\u05e8"];
+
+var ACTION_OPTS = ["\u05d4\u05d7\u05dc\u05e3 \u05d7\u05d3\u05e9", "\u05d4\u05d7\u05dc\u05e3 \u05de\u05e9\u05d5\u05de\u05e9 \u05e6\u05d1\u05e2 \u05d6\u05d4\u05d4", "\u05ea\u05d9\u05e7\u05d5\u05df \u05e4\u05d7\u05d7\u05d5\u05ea+\u05e6\u05d1\u05e2", "\u05ea\u05e7\u05df"];
+
+var ORIGIN_OPTS = ["\u05ea\u05d7\u05dc\u05d9\u05e4\u05d9", "\u05de\u05e7\u05d5\u05e8\u05d9", "\u05de\u05e9\u05d5\u05de\u05e9", "\u05ea\u05d5\u05d0\u05dd"];
+
+// Storage helpers
+function sget(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function sset(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function sdel(k){try{localStorage.removeItem(k);}catch(e){}}
+
+function loadProfile(){return sget("sh_p");}
+function saveProfile(p){sset("sh_p",p);}
+function loadReports(){
+  var ids=sget("sh_ids")||[];
+  return ids.map(function(id){return sget("sh_r_"+id);}).filter(Boolean);
+}
+function saveReport(r){
+  sset("sh_r_"+r.id,r);
+  var ids=sget("sh_ids")||[];
+  if(ids.indexOf(r.id)<0){ids.unshift(r.id);sset("sh_ids",ids);}
+}
+function deleteReport(id){
+  sdel("sh_r_"+id);
+  var ids=(sget("sh_ids")||[]).filter(function(x){return x!==id;});
+  sset("sh_ids",ids);
+}
+
+function fmt(n){return Number(n||0).toLocaleString("he-IL",{maximumFractionDigits:0});}
+function toDay(){return new Date().toLocaleDateString("he-IL");}
+function zoneName(id){var z=ZONES_DATA.find(function(z){return z.id===id;});return z?z.l:"";}
+function getType(id){return TYPES.find(function(t){return t.id===id;})||TYPES[0];}
+
+function newForm(){
+  var d=new Date();
+  var m=d.getMonth()+1;
+  return {
+    caseNumber:d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+Math.floor(Math.random()*9000+1000),
+    reportType:"repair", ownerName:"", licenseNum:"", carMake:"", carModel:"", carYear:"",
+    vin:"", km:"", owners:"1", color:"", fuelType:"", engineCC:"", gearbox:"",
+    licenseExpiry:"", firstRegistration:"", ownership:"",
+    insurance:"", policyNum:"", claimNum:"",
+    incidentDate:"", inspectionDate:d.toISOString().slice(0,10),
+    garage:"", damageType:DMG_OPTS[0],
+    incidentDesc:"", description:"", notes:"",
+    baseValue:"", kmAdj:"0", ownersAdj:"0", extras:"0", vehicleValue:"",
+    paintCost:"", otherCost:"", salvageValue:""
+  };
+}
+
+var S={screen:"home",profile:null,reports:[],form:null,parts:[],labor:[],zone:"front",tab:"diagram",printData:null};
+
+function calc(){
+  var f=S.form||{};
+  var tp=S.parts.reduce(function(s,p){return s+(Number(p.price)||0);},0);
+  var tl=S.labor.reduce(function(s,l){return s+(Number(l.hours)||0)*LR;},0);
+  var paint=Number(f.paintCost||0),other=Number(f.otherCost||0);
+  var sub=tp+tl+paint+other,vat=sub*VAT,total=sub+vat;
+  var vv=Number(f.vehicleValue||0),pct=vv?(sub/vv*100):0;
+  return {tp:tp,tl:tl,paint:paint,other:other,sub:sub,vat:vat,total:total,vv:vv,pct:pct};
+}
+
+function updateVV(){
+  if(!S.form)return;
+  var v=(Number(S.form.baseValue)||0)+(Number(S.form.kmAdj)||0)+(Number(S.form.ownersAdj)||0)+(Number(S.form.extras)||0);
+  if(S.form.baseValue)S.form.vehicleValue=String(v);
+}
+
+function g(id){return document.getElementById(id);}
+function ce(tag,opts){
+  var el=document.createElement(tag);
+  if(opts)Object.keys(opts).forEach(function(k){
+    if(k==="style")el.style.cssText=opts[k];
+    else if(k==="className")el.className=opts[k];
+    else if(k==="textContent")el.textContent=opts[k];
+    else el[k]=opts[k];
+  });
+  return el;
+}
+function btn(text,cls,fn){var b=ce("button",{textContent:text,className:"btn "+(cls||"")});b.onclick=fn;return b;}
+
+// DOM helpers
+function field(label,key,val,type,cls,ro){
+  var d=ce("div",{className:"fld"+(cls?" "+cls:"")+(ro?" fld-ro":"")});
+  var l=ce("label",{textContent:label});
+  var inp=ce("input");
+  inp.type=type||"text"; inp.value=val||"";
+  if(ro)inp.readOnly=true;
+  if(!ro){inp.onchange=(function(k){return function(){S.form[k]=this.value;if(["baseValue","kmAdj","ownersAdj","extras"].indexOf(k)>=0)updateVV();render();};})(key);}
+  d.appendChild(l); d.appendChild(inp); return d;
+}
+function fieldN(label,key,val,cls){
+  var d=ce("div",{className:"fld"+(cls?" "+cls:"")});
+  var l=ce("label",{textContent:label});
+  var inp=ce("input");
+  inp.type="number"; inp.value=val||"";
+  inp.onchange=(function(k){return function(){S.form[k]=this.value;if(["baseValue","kmAdj","ownersAdj","extras"].indexOf(k)>=0)updateVV();render();};})(key);
+  d.appendChild(l); d.appendChild(inp); return d;
+}
+function fieldD(label,key,val,cls){
+  var d=ce("div",{className:"fld"+(cls?" "+cls:"")});
+  var l=ce("label",{textContent:label});
+  var inp=ce("input"); inp.type="date"; inp.value=val||"";
+  inp.onchange=(function(k){return function(){S.form[k]=this.value;render();};})(key);
+  d.appendChild(l); d.appendChild(inp); return d;
+}
+function fieldSel(label,key,val,opts,cls){
+  var d=ce("div",{className:"fld"+(cls?" "+cls:"")});
+  var l=ce("label",{textContent:label});
+  var sel=ce("select");
+  opts.forEach(function(o){var op=ce("option",{textContent:o,value:o});if(val===o)op.selected=true;sel.appendChild(op);});
+  sel.onchange=(function(k){return function(){S.form[k]=this.value;render();};})(key);
+  d.appendChild(l); d.appendChild(sel); return d;
+}
+function fieldTA(label,key,val){
+  var d=ce("div",{className:"fld s2"});
+  var l=ce("label",{textContent:label});
+  var ta=ce("textarea"); ta.rows=3; ta.value=val||"";
+  ta.onchange=(function(k){return function(){S.form[k]=this.value;};})(key);
+  d.appendChild(l); d.appendChild(ta); return d;
+}
+
+function nav(title,right){
+  var n=ce("nav",{className:"nav"});
+  var b=ce("div",{className:"nav-brand",textContent:title});
+  var r=ce("div",{style:"display:flex;gap:8px;align-items:center"});
+  (right||[]).forEach(function(x){r.appendChild(x);});
+  n.appendChild(b); n.appendChild(r);
+  return n;
+}
+
+function render(){
+  S.reports=loadReports();
+  var app=g("app");
+  if(!app)return;
+  app.innerHTML="";
+  app.removeAttribute("style");
+  if(S.screen==="home")renderHome(app);
+  else if(S.screen==="list")renderList(app);
+  else if(S.screen==="editor")renderEditor(app);
+  else if(S.screen==="print")renderPrint(app);
+}
+
+function renderHome(app){
+  var P=S.profile;
+  var reports=S.reports;
+  app.appendChild(nav(H.appTitle,[
+    btn(H.assessorProfile,"btn-s",function(){S.profile=S.profile||loadProfile()||{};showModal();}),
+    btn(H.archive+" ("+reports.length+")","btn-s",function(){S.screen="list";render();}),
+    btn(H.newReport,"",function(){S.form=newForm();S.parts=[];S.labor=[{description:"",type:"bodywork",hours:"2"}];S.zone="front";S.tab="diagram";S.screen="editor";render();})
+  ]));
+
+  var hero=ce("div",{className:"hero"});
+  var h2=ce("h2",{textContent:H.appTitle});
+  var p=ce("p",{textContent:H.repair_d+" | "+H.defacto_d+" | "+H.total_d});
+  hero.appendChild(h2); hero.appendChild(p); app.appendChild(hero);
+
+  var cards=ce("div",{className:"cards"});
+  TYPES.forEach(function(t){
+    var c=ce("div",{className:"card"});
+    c.style.borderTop="3px solid "+t.c;
+    var dot=ce("div"); dot.style.cssText="width:10px;height:10px;border-radius:50%;background:"+t.c+";margin-bottom:12px";
+    var h3=ce("h3",{textContent:t.n});
+    var pd=ce("p",{textContent:t.d});
+    c.appendChild(dot); c.appendChild(h3); c.appendChild(pd);
+    c.onclick=(function(tid){return function(){S.form=newForm();S.form.reportType=tid;S.parts=[];S.labor=[{description:"",type:"bodywork",hours:"2"}];S.zone="front";S.tab="diagram";S.screen="editor";render();};})(t.id);
+    cards.appendChild(c);
+  });
+  app.appendChild(cards);
+
+  var stats=ce("div",{className:"stats"});
+  [[reports.length,H.reportsCreated],[reports.filter(function(r){return r.reportType==="defacto";}).length,H.defacto],[reports.filter(function(r){return r.reportType==="total";}).length,H.total]].forEach(function(s){
+    var st=ce("div",{className:"stat"});
+    var n=ce("div",{className:"stat-n",textContent:s[0]});
+    var l=ce("div",{className:"stat-l",textContent:s[1]});
+    st.appendChild(n); st.appendChild(l); stats.appendChild(st);
+  });
+  app.appendChild(stats);
+
+  if(reports.length>0){
+    var rl=ce("div",{className:"rlist"});
+    var lbl=ce("div",{className:"rlist-lbl",textContent:H.archive});
+    rl.appendChild(lbl);
+    reports.slice(0,6).forEach(function(r){
+      var rtp=(r.parts||[]).reduce(function(s,p){return s+(Number(p.price)||0);},0);
+      var rtl=(r.laborItems||[]).reduce(function(s,l){return s+(Number(l.hours)||0)*LR;},0);
+      var rtot=(rtp+rtl)*(1+VAT);
+      var type=getType(r.reportType);
+      var ri=ce("div",{className:"ri"});
+      var info=ce("div");
+      var rn=ce("div",{className:"ri-n",textContent:r.ownerName});
+      var rm=ce("div",{className:"ri-m",textContent:(r.carMake||"")+" "+(r.carModel||"")+" "+(r.carYear||"")+" - "+(r.licenseNum||"")});
+      info.appendChild(rn); info.appendChild(rm);
+      var acts=ce("div",{className:"ri-acts"});
+      var badge=ce("span",{className:"badge "+type.bc,textContent:type.n});
+      var amt=ce("span",{textContent:fmt(rtot)+" ILS"});
+      var pb=btn(H.print,"btn-s",(function(rid){return function(){S.printData=loadReports().find(function(x){return x.id===rid;});S.screen="print";render();};})(r.id));
+      pb.style.cssText="height:30px;padding:0 12px;font-size:12px";
+      var eb=btn(H.edit_btn,"btn-s",(function(rid){return function(){doEdit(rid);};})(r.id));
+      eb.style.cssText="height:30px;padding:0 12px;font-size:12px";
+      var db=btn(H.delete,"btn-r",(function(rid){return function(){if(confirm(H.confirm_del)){deleteReport(rid);render();}};})(r.id));
+      acts.appendChild(badge); acts.appendChild(amt); acts.appendChild(eb); acts.appendChild(pb); acts.appendChild(db);
+      ri.appendChild(info); ri.appendChild(acts);
+      rl.appendChild(ri);
+    });
+    app.appendChild(rl);
+  }
+
+  if(!P){
+    var al=ce("div",{className:"noprof"});
+    var t=ce("span",{textContent:H.noProfile});
+    var lnk=ce("span",{textContent:H.setup,style:"text-decoration:underline;cursor:pointer"});
+    lnk.onclick=function(){S.profile=S.profile||loadProfile()||{};showModal();};
+    al.appendChild(t); al.appendChild(lnk); app.appendChild(al);
+  }
+}
+
+function renderList(app){
+  app.appendChild(nav(H.archive,[btn(H.back,"btn-s",function(){S.screen="home";render();})]));
+  var wrap=ce("div",{style:"padding:20px 24px"});
+  var reports=loadReports();
+  if(!reports.length){wrap.appendChild(ce("p",{textContent:H.empty_arch,style:"color:#999"}));}
+  reports.forEach(function(r){
+    var rtp=(r.parts||[]).reduce(function(s,p){return s+(Number(p.price)||0);},0);
+    var rtl=(r.laborItems||[]).reduce(function(s,l){return s+(Number(l.hours)||0)*LR;},0);
+    var rtot=(rtp+rtl)*(1+VAT);
+    var type=getType(r.reportType);
+    var ri=ce("div",{className:"ri"});
+    var info=ce("div");
+    var rn=ce("div",{className:"ri-n",textContent:r.ownerName});
+    var rm=ce("div",{className:"ri-m",textContent:r.carMake+" "+r.carModel+" - "+r.licenseNum});
+    info.appendChild(rn); info.appendChild(rm);
+    var acts=ce("div",{className:"ri-acts"});
+    var badge=ce("span",{className:"badge "+type.bc,textContent:type.n});
+    var amt=ce("span",{textContent:fmt(rtot)+" ILS"});
+    var pb=btn(H.print,"btn-g",(function(rid){return function(){S.printData=loadReports().find(function(x){return x.id===rid;});S.screen="print";render();};})(r.id));
+    pb.style.cssText="height:30px;padding:0 12px;font-size:12px";
+    var eb2=btn(H.edit_btn,"btn-s",(function(rid){return function(){doEdit(rid);};})(r.id));
+    eb2.style.cssText="height:30px;padding:0 12px;font-size:12px";
+    var db=btn(H.delete,"btn-r",(function(rid){return function(){if(confirm(H.confirm_del)){deleteReport(rid);render();}};})(r.id));
+    acts.appendChild(badge); acts.appendChild(amt); acts.appendChild(eb2); acts.appendChild(pb); acts.appendChild(db);
+    ri.appendChild(info); ri.appendChild(acts);
+    wrap.appendChild(ri);
+  });
+  app.appendChild(wrap);
+}
+
+function renderEditor(app){
+  var c=calc(), f=S.form, pct=c.pct;
+  var pCol=pct>=60?"#c0392b":pct>=50?"#8a5a00":"#1d7a4a";
+  var pLbl=pct>=60?H.total:pct>=50?H.defacto:pct>0?H.repair:"";
+
+  // Top nav
+  var topBar=ce("div",{style:"background:#fff;border-bottom:1px solid #e0e0e0;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100"});
+  var tLeft=ce("div",{style:"display:flex;align-items:center;gap:10px"});
+  var backB=btn(H.back,"btn-s",function(){S.screen="home";render();});
+  backB.style.cssText="height:32px;padding:0 12px;font-size:12px";
+  var caseSpan=ce("span",{textContent:f.caseNumber,style:"font-size:12px;color:#6e6e73"});
+  tLeft.appendChild(backB); tLeft.appendChild(caseSpan);
+  var tRight=ce("div",{style:"display:flex;align-items:center;gap:10px"});
+  var totalSpan=ce("span",{textContent:fmt(c.total)+" ILS",style:"font-size:16px;font-weight:700"});
+  var saveB=btn(H.save,"btn-g",function(){
+    if(!S.form.ownerName){alert(H.save_alert);return;}
+    var r=JSON.parse(JSON.stringify(S.form));
+    r.id=S.form.id||Date.now().toString(); r.createdAt=S.form.createdAt||Date.now();
+    r.parts=JSON.parse(JSON.stringify(S.parts));
+    r.laborItems=JSON.parse(JSON.stringify(S.labor));
+    saveReport(r); S.form=newForm(); S.screen="home"; render();
+  });
+  saveB.style.cssText="height:34px;padding:0 16px;font-size:13px";
+  tRight.appendChild(totalSpan); tRight.appendChild(saveB);
+  topBar.appendChild(tLeft); topBar.appendChild(tRight);
+  app.appendChild(topBar);
+
+  // Editor grid
+  var grid=ce("div",{className:"editor"});
+
+  // LEFT FORM
+  var left=ce("div",{className:"eleft"});
+
+  // Type cards
+  var secT=makeSec(H.sec_type);
+  var tg=ce("div",{style:"display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px"});
+  TYPES.forEach(function(t){
+    var card=ce("div");
+    card.style.cssText="padding:12px;border-radius:10px;border:2px solid "+(f.reportType===t.id?"#1d1d1f":"#eee")+";background:"+(f.reportType===t.id?"#1d1d1f":"#fff")+";cursor:pointer";
+    var dot=ce("div"); dot.style.cssText="width:8px;height:8px;border-radius:50%;background:"+t.c+";margin-bottom:7px";
+    var tn=ce("div",{textContent:t.n}); tn.style.cssText="font-size:12px;font-weight:700;color:"+(f.reportType===t.id?"#fff":"#1d1d1f");
+    var td2=ce("div",{textContent:t.d}); td2.style.cssText="font-size:10px;color:"+(f.reportType===t.id?"rgba(255,255,255,.5)":"#999");
+    card.appendChild(dot); card.appendChild(tn); card.appendChild(td2);
+    card.onclick=(function(tid){return function(){S.form.reportType=tid;render();};})(t.id);
+    tg.appendChild(card);
+  });
+  secT.appendChild(tg); left.appendChild(secT);
+
+  // Vehicle
+  var secV=makeSec(H.sec_veh);
+  var lbox=ce("div",{className:"lookup"});
+  var lt=ce("div",{textContent:H.fetchTitle,style:"font-size:11px;font-weight:700;color:#0071e3;letter-spacing:.06em;text-transform:uppercase"});
+  var lrow=ce("div",{className:"lookup-row"});
+  var linp=ce("input"); linp.id="lplate"; linp.placeholder=H.fetchPh;
+  linp.onkeydown=function(e){if(e.key==="Enter")doLookup();};
+  var lbtn=btn(H.fetchBtn,"",doLookup); lbtn.style.cssText="height:42px;font-size:13px;flex-shrink:0";
+  var lmsg=ce("div"); lmsg.id="lmsg"; lmsg.style.cssText="font-size:12px;margin-top:8px;color:#6e6e73";
+  lrow.appendChild(linp); lrow.appendChild(lbtn);
+  lbox.appendChild(lt); lbox.appendChild(lrow); lbox.appendChild(lmsg);
+  secV.appendChild(lbox);
+  var vfg=ce("div",{className:"fg"});
+  vfg.appendChild(field(H.f_owner,"ownerName",f.ownerName));
+  vfg.appendChild(field(H.f_license,"licenseNum",f.licenseNum));
+  vfg.appendChild(field(H.f_make,"carMake",f.carMake));
+  vfg.appendChild(field(H.f_model,"carModel",f.carModel));
+  vfg.appendChild(field(H.f_year,"carYear",f.carYear));
+  vfg.appendChild(field(H.f_vin,"vin",f.vin));
+  vfg.appendChild(fieldN(H.f_km,"km",f.km));
+  vfg.appendChild(fieldN(H.f_owners,"owners",f.owners));
+  vfg.appendChild(field(H.f_color,"color",f.color));
+  vfg.appendChild(fieldSel(H.f_fuel,"fuelType",f.fuelType,FUEL_OPTS));
+  vfg.appendChild(fieldN(H.f_cc,"engineCC",f.engineCC));
+  vfg.appendChild(fieldSel(H.f_gearbox,"gearbox",f.gearbox,GEAR_OPTS));
+  vfg.appendChild(fieldD(H.f_first_reg,"firstRegistration",f.firstRegistration));
+  vfg.appendChild(fieldD(H.f_expiry,"licenseExpiry",f.licenseExpiry));
+  vfg.appendChild(fieldSel(H.f_ownership,"ownership",f.ownership,OWN_OPTS,"s2"));
+  secV.appendChild(vfg); left.appendChild(secV);
+
+  // Case
+  var secC=makeSec(H.sec_case);
+  var cfg=ce("div",{className:"fg"});
+  cfg.appendChild(field(H.f_case,"caseNumber",f.caseNumber));
+  cfg.appendChild(fieldSel(H.f_damage_type,"damageType",f.damageType,DMG_OPTS));
+  cfg.appendChild(fieldD(H.f_incident,"incidentDate",f.incidentDate));
+  cfg.appendChild(fieldD(H.f_inspection,"inspectionDate",f.inspectionDate));
+  cfg.appendChild(field(H.f_garage,"garage",f.garage,"text","s2"));
+  secC.appendChild(cfg); left.appendChild(secC);
+
+  // Insurance
+  var secI=makeSec(H.sec_ins);
+  var ifg=ce("div",{className:"fg"});
+  ifg.appendChild(field(H.f_insurance,"insurance",f.insurance));
+  ifg.appendChild(field(H.f_policy,"policyNum",f.policyNum));
+  ifg.appendChild(field(H.f_claim,"claimNum",f.claimNum,"text","s2"));
+  secI.appendChild(ifg); left.appendChild(secI);
+
+  // Value
+  var secVal=makeSec(H.sec_val);
+  var vvfg=ce("div",{className:"fg"});
+  vvfg.appendChild(fieldN(H.f_base_val,"baseValue",f.baseValue));
+  vvfg.appendChild(fieldN(H.f_km_adj,"kmAdj",f.kmAdj));
+  vvfg.appendChild(fieldN(H.f_owners_adj,"ownersAdj",f.ownersAdj));
+  vvfg.appendChild(fieldN(H.f_extras,"extras",f.extras));
+  vvfg.appendChild(field(H.f_vehicle_val,"vehicleValue",fmt(f.vehicleValue),"text","",true));
+  if(f.reportType==="defacto"||f.reportType==="total") vvfg.appendChild(fieldN(H.f_salvage,"salvageValue",f.salvageValue));
+  secVal.appendChild(vvfg); left.appendChild(secVal);
+
+  // Descriptions
+  var secD=makeSec(H.sec_desc);
+  secD.appendChild(fieldTA(H.f_incident_desc,"incidentDesc",f.incidentDesc));
+  secD.appendChild(fieldTA(H.f_damage_desc,"description",f.description));
+  secD.appendChild(fieldTA(H.f_notes,"notes",f.notes));
+  left.appendChild(secD);
+
+  // Labor
+  var secL=makeSec(H.sec_labor+" - "+LR+" ILS/hr");
+  S.labor.forEach(function(l,i){
+    var row=ce("div",{style:"display:grid;grid-template-columns:2fr 1fr .65fr auto;gap:8px;margin-bottom:8px;align-items:end"});
+    var df=ce("div",{className:"fld"});
+    if(i===0){df.appendChild(ce("label",{textContent:H.f_labor_desc}));}
+    var di=ce("input"); di.value=l.description||""; di.placeholder="";
+    di.onchange=(function(ii){return function(){S.labor[ii].description=this.value;};})(i);
+    df.appendChild(di);
+    var ds=ce("div",{className:"fld"});
+    if(i===0){ds.appendChild(ce("label",{textContent:H.f_type}));}
+    var dsel=ce("select");
+    LTYPES.forEach(function(lt){var op=ce("option",{textContent:lt.l,value:lt.id});if(l.type===lt.id)op.selected=true;dsel.appendChild(op);});
+    dsel.onchange=(function(ii){return function(){S.labor[ii].type=this.value;};})(i);
+    ds.appendChild(dsel);
+    var dh=ce("div",{className:"fld"});
+    if(i===0){dh.appendChild(ce("label",{textContent:H.f_hours}));}
+    var hi=ce("input"); hi.type="number"; hi.value=l.hours||"";
+    hi.onchange=(function(ii){return function(){S.labor[ii].hours=this.value;render();};})(i);
+    dh.appendChild(hi);
+    var xb=ce("button",{textContent:"X"});
+    xb.style.cssText="background:rgba(0,0,0,.07);border:none;border-radius:8px;cursor:pointer;color:#999;font-size:16px;padding:0 10px;height:42px;margin-top:"+(i===0?"22":"0")+"px;font-family:inherit";
+    xb.onclick=(function(ii){return function(){S.labor.splice(ii,1);render();};})(i);
+    row.appendChild(df); row.appendChild(ds); row.appendChild(dh); row.appendChild(xb);
+    secL.appendChild(row);
+  });
+  var addLB=btn("+ "+H.add_labor,"btn-s",function(){S.labor.push({description:"",type:"bodywork",hours:"1"});render();});
+  addLB.style.cssText="height:34px;padding:0 14px;font-size:12px;margin-top:4px";
+  secL.appendChild(addLB); left.appendChild(secL);
+
+  // Paint
+  var secP=makeSec(H.sec_paint);
+  var pfg=ce("div",{className:"fg"});
+  pfg.appendChild(fieldN(H.f_paint,"paintCost",f.paintCost));
+  pfg.appendChild(fieldN(H.f_other_cost,"otherCost",f.otherCost));
+  secP.appendChild(pfg); left.appendChild(secP);
+  grid.appendChild(left);
+
+  // RIGHT
+  var right=ce("div",{className:"eright"});
+  var ticker=ce("div",{className:"ticker"});
+  [{l:H.t_parts,v:c.tp},{l:H.t_labor,v:c.tl},{l:H.t_paint,v:c.paint},{l:H.t_total,v:c.total}].forEach(function(x){
+    var tk=ce("div",{className:"tick"});
+    tk.appendChild(ce("div",{className:"tick-v",textContent:fmt(x.v)+" ILS"}));
+    tk.appendChild(ce("div",{className:"tick-l",textContent:x.l}));
+    ticker.appendChild(tk);
+  });
+  right.appendChild(ticker);
+
+  var gauge=ce("div",{className:"gauge"});
+  var gtop=ce("div",{className:"gauge-top"});
+  gtop.appendChild(ce("span",{className:"gauge-lbl",textContent:H.gauge_lbl}));
+  var gval=ce("span",{textContent:pct.toFixed(1)+"% "+pLbl,style:"font-size:13px;font-weight:700;color:"+pCol});
+  gtop.appendChild(gval);
+  var gbar=ce("div",{className:"gauge-bar"});
+  var gfill=ce("div",{className:"gauge-fill",style:"width:"+Math.min(pct,100)+"%;background:"+pCol});
+  gbar.appendChild(gfill);
+  gauge.appendChild(gtop); gauge.appendChild(gbar);
+  right.appendChild(gauge);
+
+  var tabs=ce("div",{className:"tabs"});
+  var tab1=ce("button",{className:"tab"+(S.tab==="diagram"?" on":""),textContent:H.tab_diagram}); tab1.onclick=function(){S.tab="diagram";render();};
+  var tab2=ce("button",{className:"tab"+(S.tab==="parts"?" on":""),textContent:H.tab_parts+" ("+S.parts.length+")"}); tab2.onclick=function(){S.tab="parts";render();};
+  tabs.appendChild(tab1); tabs.appendChild(tab2);
+  right.appendChild(tabs);
+
+  var panel=ce("div",{className:"tab-panel"});
+
+  if(S.tab==="diagram"){
+    var damaged=S.parts.reduce(function(acc,p){acc[p.zone]=true;return acc;},{});
+    var zpills=ce("div",{className:"zpills"});
+    ZONES_DATA.forEach(function(z){
+      var cnt=S.parts.filter(function(p){return p.zone===z.id;}).length;
+      var zp=ce("button",{className:"zpill"+(S.zone===z.id?" on":damaged[z.id]?" hit":""),textContent:z.l+(cnt>0?" ("+cnt+")":"")});
+      zp.onclick=(function(zid){return function(){S.zone=zid;render();};})(z.id);
+      zpills.appendChild(zp);
+    });
+    panel.appendChild(zpills);
+
+    var zTitle=ce("div",{style:"font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#bf9b30;margin-bottom:10px"});
+    zTitle.textContent=ZONES_DATA.find(function(z){return z.id===S.zone;})||{l:S.zone};
+    var cz=ZONES_DATA.find(function(z){return z.id===S.zone;});
+    zTitle.textContent=cz?cz.l:S.zone;
+    panel.appendChild(zTitle);
+
+    var pbox=ce("div",{className:"pbox"});
+    var zoneParts=PARTS_DATA[S.zone]||[];
+    zoneParts.forEach(function(part){
+      var sel=S.parts.find(function(p){return p["נ"]===part["נ"]&&p.zone===S.zone;});
+      if(!sel) sel=S.parts.find(function(p){return p.name===part["נ"]&&p.zone===S.zone;});
+      var prow=ce("div",{className:"prow"+(sel?" sel":"")});
+      var pck=ce("div",{className:"pck"+(sel?" on":""),textContent:sel?"v":""});
+      var pn=ce("span",{className:"pn",textContent:part["נ"]});
+      var pp=ce("span",{className:"pp",textContent:fmt(part.p)+" ILS"});
+      prow.appendChild(pck); prow.appendChild(pn); prow.appendChild(pp);
+      prow.onclick=(function(pname,pprice,pdh,ppc,pbw){return function(){
+        var pkey=pname+S.zone;
+        var idx=S.parts.findIndex(function(p){return (p.name||p["נ"])===pname&&p.zone===S.zone;});
+        if(idx>=0){
+          S.parts.splice(idx,1);
+          S.labor=S.labor.filter(function(l){return l._part!==pkey;});
+          if(ppc>0){var cur=Number(S.form.paintCost||0);S.form.paintCost=String(Math.max(0,cur-ppc));}
+        } else {
+          S.parts.push({name:pname,zone:S.zone,price:pprice,action:ACTION_OPTS[0],origin:ORIGIN_OPTS[0],wear:"",dh:pdh,pc:ppc,bw:pbw});
+          if(pdh>0&&!S.labor.find(function(l){return l._part===pkey;})){
+            var zname=ZONES_DATA.find(function(z){return z.id===S.zone;});
+            S.labor.push({description:pname,type:"disassembly",hours:String(pdh),_part:pkey,_auto:true});
+          }
+          if(ppc>0){var cur2=Number(S.form.paintCost||0);S.form.paintCost=String(cur2+ppc);}
+        }
+        render();
+      };})(part["נ"],part.p,part.dh||0,part.pc||0,part.bw||0);
+      pbox.appendChild(prow);
+    });
+    panel.appendChild(pbox);
+  }
+
+  if(S.tab==="parts"){
+    if(!S.parts.length){
+      var empty=ce("div",{style:"text-align:center;padding:40px 20px;color:#999"});
+      empty.appendChild(ce("div",{textContent:"O",style:"font-size:32px;opacity:.25;margin-bottom:10px"}));
+      empty.appendChild(ce("div",{textContent:H.no_parts,style:"font-size:13px;font-weight:500"}));
+      panel.appendChild(empty);
+    } else {
+      S.parts.forEach(function(p,i){
+        var sp=ce("div",{className:"sp"});
+        var spt=ce("div",{className:"sp-top"});
+        var spl=ce("div",{style:"display:flex;gap:8px;align-items:center"});
+        spl.appendChild(ce("span",{className:"sp-n",textContent:p.name||p["נ"]}));
+        spl.appendChild(ce("span",{className:"sp-z",textContent:zoneName(p.zone)}));
+        var xb=ce("button",{textContent:"X",style:"background:rgba(0,0,0,.07);border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;color:#999;font-family:inherit"});
+        xb.onclick=(function(ii){return function(){S.parts.splice(ii,1);render();};})(i);
+        spt.appendChild(spl); spt.appendChild(xb);
+        var mg=ce("div",{className:"mg"});
+        [[H.f_action,"action",ACTION_OPTS],[H.f_origin,"origin",ORIGIN_OPTS]].forEach(function(triple){
+          var mf=ce("div",{className:"mf"});
+          mf.appendChild(ce("label",{textContent:triple[0]}));
+          var sel=ce("select");
+          triple[2].forEach(function(o){var op=ce("option",{textContent:o,value:o});if(p[triple[1]]===o)op.selected=true;sel.appendChild(op);});
+          sel.onchange=(function(ii,key){return function(){
+                var newVal=this.value;
+                S.parts[ii][key]=newVal;
+                if(key==="action"&&S.parts[ii]._auto){
+                  // Update auto labor based on action
+                  var p=S.parts[ii];
+                  var ltKey=(p.name||p["\u05e0"])+(p.zone||"");
+                  var autoLabIdx=S.labor.findIndex(function(l){return l._part===ltKey;});
+                  if(newVal===ACTION_OPTS[0]){
+                    // New part: disassembly + assembly + paint
+                    if(autoLabIdx<0&&p.dh>0) S.labor.push({description:(p.name||p["\u05e0"]),type:"disassembly",hours:String(p.dh),_part:ltKey,_auto:true});
+                    if(p.pc>0){var cur=Number(S.form.paintCost||0);S.form.paintCost=String(cur);}
+                  } else if(newVal===ACTION_OPTS[1]){
+                    // Used same color: disassembly only, no paint
+                    if(autoLabIdx>=0){S.labor[autoLabIdx].type="disassembly";}
+                    if(p.pc>0){var cur2=Number(S.form.paintCost||0);S.form.paintCost=String(Math.max(0,cur2-p.pc));}
+                  } else if(newVal===ACTION_OPTS[2]){
+                    // Repair: bodywork + paint, remove part labor
+                    if(autoLabIdx>=0) S.labor.splice(autoLabIdx,1);
+                    if(p.bw>0){S.parts[ii].price=p.bw;}
+                  }
+                  render();
+                }
+              };})(i,triple[1]);
+          mf.appendChild(sel); mg.appendChild(mf);
+        });
+        var wf=ce("div",{className:"mf"});
+        wf.appendChild(ce("label",{textContent:H.f_wear}));
+        var wi=ce("input"); wi.type="number"; wi.value=p.wear||""; wi.placeholder="0";
+        wi.onchange=(function(ii){return function(){S.parts[ii].wear=this.value;};})(i);
+        wf.appendChild(wi); mg.appendChild(wf);
+        var pf=ce("div",{className:"mf"});
+        pf.appendChild(ce("label",{textContent:H.f_price}));
+        var pi=ce("input"); pi.type="number"; pi.value=p.price; pi.className="price-inp";
+        pi.onchange=(function(ii){return function(){S.parts[ii].price=Number(this.value);render();};})(i);
+        pf.appendChild(pi); mg.appendChild(pf);
+        sp.appendChild(spt); sp.appendChild(mg); panel.appendChild(sp);
+      });
+    }
+  }
+
+  right.appendChild(panel);
+  grid.appendChild(right);
+  app.appendChild(grid);
+}
+
+function makeSec(title){
+  var s=ce("div",{className:"sec"});
+  s.appendChild(ce("div",{className:"sec-t",textContent:title}));
+  return s;
+}
+
+function showModal(){
+  var existing=document.getElementById("profModal");
+  if(existing)existing.remove();
+  var P=S.profile||{};
+  var bg=ce("div",{className:"modal-bg",id:"profModal"});
+  bg.onclick=function(e){if(e.target===bg){bg.remove();S.showProfile=false;}};
+  var modal=ce("div",{className:"modal"});
+  var hdr=ce("div",{style:"display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"});
+  hdr.appendChild(ce("div",{textContent:H.prof_title,style:"font-size:19px;font-weight:700"}));
+  var xb=ce("button",{textContent:"X",style:"background:rgba(0,0,0,.07);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px;color:#999;font-family:inherit"});
+  xb.onclick=function(){bg.remove();};
+  hdr.appendChild(xb); modal.appendChild(hdr);
+  var fg=ce("div",{className:"fg"});
+  [[H.prof_name,"name","s2"],[H.prof_lic,"license"],[H.prof_addr,"address","s2"],[H.prof_phone,"phone"],[H.prof_email,"email"],[H.prof_since,"since"],[H.prof_edu,"education","s2"]].forEach(function(fdef){
+    var d=ce("div",{className:"fld"+(fdef[2]?" "+fdef[2]:"")});
+    d.appendChild(ce("label",{textContent:fdef[0]}));
+    var inp=ce("input"); inp.id="pf_"+fdef[1]; inp.value=P[fdef[1]]||"";
+    d.appendChild(inp); fg.appendChild(d);
+  });
+  var cd=ce("div",{className:"fld s2"});
+  cd.appendChild(ce("label",{textContent:H.prof_certs}));
+  var cta=ce("textarea"); cta.id="pf_certifications"; cta.rows=3; cta.value=P.certifications||"";
+  cd.appendChild(cta); fg.appendChild(cd);
+  modal.appendChild(fg);
+  var btns=ce("div",{style:"display:flex;gap:10px;margin-top:20px"});
+  var saveb=btn(H.save,"btn-g",function(){
+    var keys=["name","license","address","phone","email","since","education","certifications"];
+    var p={};
+    keys.forEach(function(k){var el=document.getElementById("pf_"+k);if(el)p[k]=el.value;});
+    S.profile=p; saveProfile(p); bg.remove(); render();
+  });
+  var cancb=btn(H.cancel,"btn-s",function(){bg.remove();});
+  btns.appendChild(saveb); btns.appendChild(cancb);
+  modal.appendChild(btns); bg.appendChild(modal);
+  document.body.appendChild(bg);
+}
+
+async function doLookup(){
+  var inp=document.getElementById("lplate");
+  var msg=document.getElementById("lmsg");
+  if(!inp||!msg)return;
+  var plate=inp.value.replace(/[^0-9]/g,"");
+  if(plate.length<5){msg.textContent="?";return;}
+  msg.textContent="...";
+  var datasets=["053cea08-09bc-40ec-8f7a-156f0677aff3","03adc637-b6fe-402b-9937-7c3d3afc9140"];
+  for(var di=0;di<datasets.length;di++){
+    try{
+      var url="https://data.gov.il/api/3/action/datastore_search?resource_id="+datasets[di]+"&q="+plate+"&limit=5";
+      var res=await fetch(url,{signal:AbortSignal.timeout(6000)});
+      if(!res.ok)continue;
+      var data=await res.json();
+      if(data&&data.result&&data.result.records&&data.result.records.length>0){
+        var rec=data.result.records.find(function(r){return String(r.mispar_rechev||"")===plate;})||data.result.records[0];
+        S.form.licenseNum=String(rec.mispar_rechev||"");
+        S.form.carMake=rec.tozeret_nm||rec.tozeret_cd_nm||"";
+        S.form.carModel=rec.kinuy_mishari||rec.degem_nm||"";
+        S.form.carYear=String(rec.shnat_yitzur||"");
+        S.form.vin=rec.misgeret||"";
+        S.form.color=rec.tzeva_rechev||"";
+        S.form.fuelType=rec.sug_delek_nm||"";
+        S.form.engineCC=rec.nefah_manoa?String(rec.nefah_manoa):"";
+        S.form.gearbox=rec.automatic_ind?(String(rec.automatic_ind)==="1"?GEAR_OPTS[1]:GEAR_OPTS[2]):"";
+        S.form.licenseExpiry=rec.tokef_dt||"";
+        S.form.firstRegistration=rec.moed_aliya_lakvish||"";
+        msg.textContent="OK";
+        render(); return;
+      }
+    }catch(e){continue;}
+  }
+  msg.textContent="Not found";
+}
+
+function renderPrint(app){
+  var R=S.printData||{};
+  var P=S.profile||{};
+  var tp=(R.parts||[]).reduce(function(s,p){return s+(Number(p.price)||0);},0);
+  var tl=(R.laborItems||[]).reduce(function(s,l){return s+(Number(l.hours)||0)*LR;},0);
+  var paint=Number(R.paintCost||0),other=Number(R.otherCost||0);
+  var sub=tp+tl+paint+other,vat=sub*VAT,total=sub+vat;
+  var vv=Number(R.vehicleValue||0),pct=vv?(sub/vv*100):0;
+  var verdict=pct>=60?H.total:pct>=50?H.defacto:H.repair;
+  var vCol=pct>=60?"#c0392b":pct>=50?"#8a5a00":"#1d7a4a";
+
+  // Inject print CSS into head
+  var styleId="print-style";
+  var existing=document.getElementById(styleId);
+  if(existing)existing.remove();
+  var style=document.createElement("style");
+  style.id=styleId;
+  style.textContent=[
+    "@media print{",
+    "  body{margin:0;padding:0;background:#fff!important}",
+    "  #app{display:none!important}",
+    "  #print-root{display:block!important}",
+    "  .pg{page-break-after:always;break-after:page}",
+    "  .pg:last-child{page-break-after:auto;break-after:auto}",
+    "  .noprint{display:none!important}",
+    "  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}",
+    "}",
+    "@page{size:A4;margin:10mm 12mm}",
+    "#print-root{display:none;font-family:-apple-system,Arial,sans-serif;direction:rtl;color:#1d1d1f;background:#fff}",
+    ".pg{width:100%;min-height:267mm;padding:0;margin:0;position:relative;background:#fff;box-sizing:border-box}",
+    ".pg-inner{padding:8mm 10mm 20mm}",
+    ".pg-footer{position:absolute;bottom:6mm;left:10mm;right:10mm;padding-top:5px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:8px;color:#999}",
+    ".ph{padding-bottom:8px;border-bottom:2px solid #1d1d1f;margin-bottom:12px}",
+    ".ph table{width:100%;border-collapse:collapse}",
+    ".sh{font-weight:700;font-size:13px;border-bottom:2px solid #1d1d1f;padding-bottom:4px;margin-bottom:12px;display:inline-block;padding-left:14px}",
+    "table{border-collapse:collapse;width:100%}",
+    "td,th{padding:5px 8px;border:1px solid #ddd;font-size:10px;vertical-align:top}",
+    "th{background:#1d1d1f;color:#fff;font-weight:500;text-transform:uppercase;font-size:9px}",
+    ".lc{background:#f5f5f7;font-weight:600;font-size:9px}",
+  ].join("\n");
+  document.head.appendChild(style);
+
+  // Create print root outside app
+  var pr=document.getElementById("print-root");
+  if(!pr){pr=document.createElement("div");pr.id="print-root";document.body.appendChild(pr);}
+  pr.innerHTML="";
+
+  // Toolbar (noprint)
+  var tb=document.createElement("div");
+  tb.className="noprint";
+  tb.style.cssText="position:fixed;top:0;left:0;right:0;z-index:9999;background:#1d1d1f;padding:10px 20px;display:flex;gap:10px;align-items:center";
+  var pb=document.createElement("button");
+  pb.style.cssText="background:#bf9b30;color:#fff;border:none;padding:9px 20px;cursor:pointer;font-weight:600;font-size:13px;border-radius:980px;font-family:inherit";
+  pb.textContent=H.printPdf;
+  pb.onclick=function(){window.print();};
+  var cb=document.createElement("button");
+  cb.style.cssText="background:rgba(255,255,255,.12);border:none;color:#fff;padding:9px 16px;cursor:pointer;font-size:13px;border-radius:980px;font-family:inherit";
+  cb.textContent=H.close;
+  cb.onclick=function(){
+    var prs=document.getElementById("print-root");
+    if(prs){prs.innerHTML="";prs.style.display="none";}
+    var ss=document.getElementById("print-style");
+    if(ss)ss.remove();
+    S.screen="home";render();
+  };
+  var info=document.createElement("span");
+  info.style.cssText="color:#888;font-size:12px;margin-right:8px";
+  info.textContent="5 "+H.pg_summary;
+  tb.appendChild(pb);tb.appendChild(cb);tb.appendChild(info);
+  pr.appendChild(tb);
+
+  // Preview wrapper (screen only)
+  var preview=document.createElement("div");
+  preview.className="noprint";
+  preview.style.cssText="background:#e8e8ea;padding:60px 20px 40px;min-height:100vh";
+
+  var tds="padding:5px 8px;border:1px solid #ddd;font-size:10px;vertical-align:top";
+  var lcs=tds+";background:#f5f5f7;font-weight:600;font-size:9px";
+
+  function pgHdr(){
+    var h=document.createElement("div");h.className="ph";
+    var t=document.createElement("table");t.style.cssText="width:100%;border-collapse:collapse";
+    var tr=document.createElement("tr");
+    var td1=document.createElement("td");td1.style.cssText="width:38%;vertical-align:top;padding-left:12px;border-left:2px solid #1d1d1f;border:none;border-left:2px solid #1d1d1f;padding-left:12px";
+    td1.innerHTML="<div style='font-size:13px;font-weight:700;margin-bottom:1px'>"+(P.name||"")+"</div><div style='font-size:8px;color:#666'>"+(P.address||"")+"</div><div style='font-size:8px;color:#666'>"+(P.phone||"")+" | "+(P.email||"")+"</div><div style='font-size:7px;color:#999'>"+H.lic_label+" "+(P.license||"")+"</div>";
+    var td2=document.createElement("td");td2.style.cssText="width:36%;text-align:center;padding:0 10px;vertical-align:top;border:none";
+    td2.innerHTML="<div style='font-size:10px;font-weight:600'>"+(R.ownerName||"")+"</div><div style='font-size:9px;color:#444'>"+(R.licenseNum||"")+" - "+(R.carMake||"")+" "+(R.carModel||"")+" "+(R.carYear||"")+"</div>";
+    var td3=document.createElement("td");td3.style.cssText="width:26%;vertical-align:top;padding-right:12px;border-right:2px solid #1d1d1f;text-align:left;border:none;border-right:2px solid #1d1d1f;padding-right:12px";
+    var vsp="<span style='padding:1px 7px;font-size:7px;font-weight:600;text-transform:uppercase;background:"+vCol+"15;color:"+vCol+";border-radius:980px;border:1px solid "+vCol+"30'>"+verdict+"</span>";
+    td3.innerHTML="<div style='font-size:11px;font-weight:700'>"+(R.caseNumber||"")+"</div><div style='font-size:8px;color:#666'>"+toDay()+"</div><div style='margin-top:3px'>"+vsp+"</div>";
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);t.appendChild(tr);h.appendChild(t);
+    return h;
+  }
+
+  function pgFtr(num,title){
+    var f=document.createElement("div");f.className="pg-footer";
+    f.innerHTML="<span>"+(P.name||"")+" - "+H.lic_label+" "+(P.license||"")+"</span><span>"+title+"</span><span>"+num+" / 5 - "+(R.caseNumber||"")+"</span>";
+    return f;
+  }
+
+  function shTitle(txt){
+    var d=document.createElement("div");d.className="sh";d.textContent=txt;return d;
+  }
+
+  function mkPage(num,title,buildFn){
+    var outer=document.createElement("div");
+    outer.style.cssText="background:#fff;box-shadow:0 2px 16px rgba(0,0,0,.1);margin:0 auto 16px;max-width:210mm";
+    var pg=document.createElement("div");pg.className="pg";
+    var inner=document.createElement("div");inner.className="pg-inner";
+    inner.appendChild(pgHdr());
+    buildFn(inner);
+    pg.appendChild(inner);
+    pg.appendChild(pgFtr(num,title));
+    outer.appendChild(pg);
+    return outer;
+  }
+
+  function tRow4(a,b,c,d){
+    var tr=document.createElement("tr");
+    [[a,lcs],[b,tds],[c,lcs],[d,tds]].forEach(function(x){
+      var td2=document.createElement("td");td2.style.cssText=x[1];td2.textContent=x[0]||"-";tr.appendChild(td2);
+    });
+    return tr;
+  }
+
+  // ═══ PAGE 1: SUMMARY ═══
+  var pg1=mkPage(1,H.pg_summary,function(inner){
+    var titleBar=document.createElement("div");
+    titleBar.style.cssText="text-align:center;padding:7px 0;background:#1d1d1f;color:#fff;margin-bottom:16px";
+    titleBar.innerHTML="<h1 style='font-size:16px;font-weight:700;margin:0'>"+H.print_title+"</h1>";
+    inner.appendChild(titleBar);
+    inner.appendChild(shTitle(H.pg_summary));
+    var row=document.createElement("div");row.style.cssText="display:flex;gap:12px;margin-bottom:16px";
+    var vbox=document.createElement("div");
+    vbox.style.cssText="flex:1.5;border:2px solid "+vCol+";border-radius:10px;padding:18px;background:"+vCol+"06";
+    vbox.innerHTML="<div style='font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#999;margin-bottom:6px'>"+H.pg_summary+"</div><div style='font-size:44px;font-weight:700;color:"+vCol+";line-height:1'>"+pct.toFixed(1)+"%</div><div style='font-size:11px;color:#666;margin:4px 0 10px'>"+H.dmg_sub+"</div><div style='font-size:20px;font-weight:700;color:"+vCol+"'>"+verdict+"</div>";
+    var totbox=document.createElement("div");
+    totbox.style.cssText="flex:1;border:2px solid #1d1d1f;border-radius:10px;padding:16px";
+    var totRows=[[H.f_vehicle_val,fmt(vv)+" ILS"],[H.dmg_sub,fmt(sub)+" ILS"],[H.vat,fmt(vat)+" ILS"],[H.total_pay,fmt(total)+" ILS"]];
+    totRows.forEach(function(r,i){
+      var d=document.createElement("div");
+      d.style.cssText="display:flex;justify-content:space-between;padding:4px 0;font-size:"+(i===3?"13":"11")+"px;border-bottom:1px solid #f0f0f2"+(i===3?";font-weight:700;border-top:1.5px solid #1d1d1f;margin-top:6px;padding-top:8px":"");
+      d.innerHTML="<span style='color:"+(i===3?"#1d1d1f":"#666")+"'>"+r[0]+"</span><span style='font-weight:"+(i===3?"700":"500")+"'>"+r[1]+"</span>";
+      totbox.appendChild(d);
+    });
+    row.appendChild(vbox);row.appendChild(totbox);inner.appendChild(row);
+    if(R.incidentDesc){
+      var dd=document.createElement("div");dd.style.marginBottom="10px";
+      dd.innerHTML="<div style='font-weight:600;font-size:10px;color:#666;text-transform:uppercase;margin-bottom:4px'>"+H.f_incident_desc+"</div><p style='font-size:10px;line-height:1.7;margin:0;white-space:pre-wrap'>"+R.incidentDesc+"</p>";
+      inner.appendChild(dd);
+    }
+  });
+  preview.appendChild(pg1);
+
+  // ═══ PAGE 2: VEHICLE VALUE ═══
+  var pg2=mkPage(2,H.pg_value,function(inner){
+    inner.appendChild(shTitle(H.pg_value));
+    var vvTbl=document.createElement("table");
+    var vh=document.createElement("tr");vh.style.background="#1d1d1f";
+    ["Item","","ILS"].forEach(function(h){var th=document.createElement("th");th.textContent=h;th.style.cssText="padding:5px 8px;border:1px solid #333;color:#fff;font-weight:500;font-size:9px;text-transform:uppercase";vh.appendChild(th);});
+    vvTbl.appendChild(vh);
+    [[H.f_base_val,"",fmt(R.baseValue)],[H.f_km_adj,"",fmt(R.kmAdj)],[H.f_owners_adj,"",fmt(R.ownersAdj)],[H.f_extras,"",fmt(R.extras)],[H.f_vehicle_val+" (incl. VAT)","100%",fmt(vv)]].forEach(function(r3){
+      var tr=document.createElement("tr");
+      r3.forEach(function(v,vi){var td2=document.createElement("td");td2.style.cssText=tds+(vi===2?";font-weight:600":"")+(vi===0?";text-align:right":";text-align:center");td2.textContent=v||"-";tr.appendChild(td2);});
+      if(r3[0]===H.f_vehicle_val+" (incl. VAT)") tr.style.background="#f5f5f7";
+      vvTbl.appendChild(tr);
+    });
+    inner.appendChild(vvTbl);
+    inner.appendChild(shTitle(H.sec_veh));
+    var detTbl=document.createElement("table");
+    var db=document.createElement("tbody");
+    [[H.f_license,R.licenseNum,H.f_make,R.carMake],[H.f_model,R.carModel,H.f_year,R.carYear],[H.f_vin,R.vin,H.f_km,R.km?Number(R.km).toLocaleString():""],[H.f_owners,R.owners,H.f_color,R.color],[H.f_fuel,R.fuelType,H.f_cc,R.engineCC],[H.f_gearbox,R.gearbox,H.f_expiry,R.licenseExpiry],[H.f_first_reg,R.firstRegistration,H.f_ownership,R.ownership]].forEach(function(r4){db.appendChild(tRow4(r4[0],r4[1],r4[2],r4[3]));});
+    detTbl.appendChild(db);inner.appendChild(detTbl);
+  });
+  preview.appendChild(pg2);
+
+  // ═══ PAGE 3: CASE DETAILS ═══
+  var pg3=mkPage(3,H.pg_case,function(inner){
+    inner.appendChild(shTitle(H.pg_case));
+    var caseTbl=document.createElement("table");
+    var cb2=document.createElement("tbody");
+    [[H.f_owner,R.ownerName,H.f_insurance,R.insurance],[H.f_case,R.caseNumber,H.f_policy,R.policyNum],[H.f_damage_type,R.damageType,H.f_claim,R.claimNum],[H.f_incident,R.incidentDate,H.f_inspection,R.inspectionDate]].forEach(function(r5){cb2.appendChild(tRow4(r5[0],r5[1],r5[2],r5[3]));});
+    caseTbl.appendChild(cb2);inner.appendChild(caseTbl);
+    [["description",H.f_damage_desc],["notes",H.f_notes]].forEach(function(pair){
+      if(R[pair[0]]){
+        var dd=document.createElement("div");dd.style.marginBottom="10px";dd.style.marginTop="10px";
+        dd.innerHTML="<div style='font-weight:600;font-size:10px;color:#666;text-transform:uppercase;border-bottom:1px solid #ddd;padding-bottom:3px;margin-bottom:6px'>"+pair[1]+"</div><p style='font-size:10px;line-height:1.7;margin:0;white-space:pre-wrap'>"+R[pair[0]]+"</p>";
+        inner.appendChild(dd);
+      }
+    });
+  });
+  preview.appendChild(pg3);
+
+  // ═══ PAGE 4: DAMAGE ESTIMATE ═══
+  var pg4=mkPage(4,H.pg_damage,function(inner){
+    inner.appendChild(shTitle(H.pg_damage));
+    var dmgTbl=document.createElement("table");
+    var dh=document.createElement("tr");dh.style.background="#1d1d1f";
+    [H.col_desc,H.col_zone,H.col_action,H.col_origin,H.col_wear,H.col_cost].forEach(function(h){
+      var th=document.createElement("th");th.style.cssText="padding:5px 7px;border:1px solid #333;color:#fff;font-weight:500;text-align:center;font-size:8px;text-transform:uppercase";th.textContent=h;dh.appendChild(th);
+    });
+    dmgTbl.appendChild(dh);
+    (R.parts||[]).forEach(function(p,i){
+      var tr=document.createElement("tr");tr.style.background=i%2===0?"#fbfbfd":"#fff";
+      [p.name||p["\u05e0"],zoneName(p.zone),p.action,p.origin,p.wear?p.wear+"%":"-",fmt(p.price)+" ILS"].forEach(function(v,vi){
+        var td2=document.createElement("td");td2.style.cssText=tds+";text-align:"+(vi===0?"right":"center")+(vi===5?";font-weight:600":"");td2.textContent=v||"-";tr.appendChild(td2);
+      });
+      dmgTbl.appendChild(tr);
+    });
+    (R.laborItems||[]).filter(function(l){return l.description;}).forEach(function(l,i){
+      var idx2=(R.parts||[]).length+i;
+      var tr=document.createElement("tr");tr.style.background=idx2%2===0?"#fbfbfd":"#fff";
+      var lt=LTYPES.find(function(t){return t.id===l.type;})||{l:""};
+      [l.description,lt.l,H.sec_labor,"-",l.hours+"h",fmt((Number(l.hours)||0)*LR)+" ILS"].forEach(function(v,vi){
+        var td2=document.createElement("td");td2.style.cssText=tds+";text-align:"+(vi===0?"right":"center")+(vi===5?";font-weight:600":"");td2.textContent=v||"-";tr.appendChild(td2);
+      });
+      dmgTbl.appendChild(tr);
+    });
+    if(paint>0){var pr2=document.createElement("tr");pr2.appendChild((function(){var td2=document.createElement("td");td2.colSpan=5;td2.style.cssText=tds;td2.textContent=H.t_paint;return td2;})());pr2.appendChild((function(){var td2=document.createElement("td");td2.style.cssText=tds+";text-align:center;font-weight:600";td2.textContent=fmt(paint)+" ILS";return td2;})());dmgTbl.appendChild(pr2);}
+    inner.appendChild(dmgTbl);
+    var sumDiv=document.createElement("div");sumDiv.style.cssText="display:flex;justify-content:flex-end;margin-top:12px";
+    var sumTbl=document.createElement("table");sumTbl.style.cssText="width:52%;border-collapse:collapse";
+    [[H.t_parts,tp],[H.t_labor,tl],paint>0?[H.t_paint,paint]:null,[H.dmg_sub,sub],["VAT 17%",vat]].filter(Boolean).forEach(function(r6){
+      var tr=document.createElement("tr");
+      var td1=document.createElement("td");td1.style.cssText=lcs;td1.textContent=r6[0];
+      var td2=document.createElement("td");td2.style.cssText=tds+";font-weight:600";td2.textContent=fmt(r6[1])+" ILS";
+      tr.appendChild(td1);tr.appendChild(td2);sumTbl.appendChild(tr);
+    });
+    var totR=document.createElement("tr");totR.style.background="#1d1d1f";
+    var tt1=document.createElement("td");tt1.style.cssText="padding:7px 8px;border:1px solid #1d1d1f;color:#fff;font-weight:700;font-size:12px";tt1.textContent=H.total_pay;
+    var tt2=document.createElement("td");tt2.style.cssText="padding:7px 8px;border:1px solid #1d1d1f;color:#fff;font-weight:700;font-size:13px";tt2.textContent=fmt(total)+" ILS";
+    totR.appendChild(tt1);totR.appendChild(tt2);sumTbl.appendChild(totR);
+    sumDiv.appendChild(sumTbl);inner.appendChild(sumDiv);
+  });
+  preview.appendChild(pg4);
+
+  // ═══ PAGE 5: DECLARATION ═══
+  var pg5=mkPage(5,H.pg_decl,function(inner){
+    inner.appendChild(shTitle(H.prof_heading));
+    var ab=document.createElement("div");
+    ab.style.cssText="padding:12px 16px;background:#fafafa;border:1px solid #e5e5ea;border-radius:8px;margin-bottom:16px;font-size:10px;line-height:1.8;color:#3a3a3c";
+    ab.textContent=(P.name||"")+" - "+H.lic_label+" "+(P.license||"")+(P.education?" | "+P.education:"")+(P.since?" | "+P.since:"")+(P.certifications?" | "+P.certifications:"");
+    inner.appendChild(ab);
+    inner.appendChild(shTitle(H.pg_decl));
+    var db2=document.createElement("div");
+    db2.style.cssText="padding:14px 18px;background:#fafafa;border:2px solid #1d1d1f;border-radius:8px;margin-bottom:24px;font-size:10px;line-height:1.9;color:#1d1d1f";
+    db2.textContent=H.declaration;
+    inner.appendChild(db2);
+    var sigRow=document.createElement("div");sigRow.style.cssText="margin-top:40px;display:flex;justify-content:space-between";
+    var s1=document.createElement("div");s1.style.textAlign="center";
+    s1.innerHTML="<div style='width:180px;border-bottom:1.5px solid #1d1d1f;padding-bottom:32px;margin-bottom:6px'></div><div style='font-size:12px;font-weight:700'>"+(P.name||"")+"</div><div style='font-size:9px;color:#888'>"+H.lic_label+" "+(P.license||"")+"</div>";
+    var s2=document.createElement("div");s2.style.textAlign="center";
+    s2.innerHTML="<div style='width:120px;border-bottom:1.5px solid #1d1d1f;padding-bottom:32px;margin-bottom:6px'></div><div style='font-size:12px;font-weight:600'>"+toDay()+"</div><div style='font-size:9px;color:#888'>"+H.f_incident+"</div>";
+    sigRow.appendChild(s1);sigRow.appendChild(s2);inner.appendChild(sigRow);
+  });
+  preview.appendChild(pg5);
+
+  pr.appendChild(preview);
+  pr.style.display="block";
+  app.innerHTML="";
+}
+function doEdit(id){
+  var reports=loadReports();
+  var r=reports.find(function(x){return x.id===id;});
+  if(!r)return;
+  deleteReport(id);
+  S.form=JSON.parse(JSON.stringify(r));
+  S.parts=JSON.parse(JSON.stringify(r.parts||[]));
+  S.labor=JSON.parse(JSON.stringify(r.laborItems||[]));
+  if(!S.labor.length) S.labor=[{description:"",type:"bodywork",hours:"2"}];
+  S.zone="front";S.tab="diagram";S.screen="editor";
+  render();
+}
+>
